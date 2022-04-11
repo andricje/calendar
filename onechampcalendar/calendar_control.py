@@ -38,7 +38,7 @@ class CalendarControl:
         return CalendarEvent(
             start_time=start_time,
             end_time=end_time,
-            title=event_name,
+            title=f"ONE: {event_name}",
             description=event_description,
             url=event_link,
         )

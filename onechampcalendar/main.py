@@ -1,5 +1,5 @@
 from calendar_control import CalendarControl
-from flask import Flask, send_file, redirect
+from flask import Flask, send_file, redirect, render_template
 
 calendar_manager = CalendarControl()
 app = Flask(__name__)
@@ -11,9 +11,21 @@ def direct_calendar_url():
     return send_file(file_path)
 
 
-@app.route("/subscribe")
-def subscribe_to_calendar():
+@app.route("/subscribe/apple")
+def subscribe_to_calendar_apple():
     return redirect("webcal://localhost:5000/onefccalendar")
+
+
+@app.route("/subscribe/google")
+def subscribe_to_calendar_google():
+    return redirect(
+        "https://www.google.com/calendar/render?cid=http://localhost:5000/onefccalendar"
+    )
+
+
+@app.route("/")
+def home():
+    return render_template("home.html")
 
 
 if __name__ == "__main__":
