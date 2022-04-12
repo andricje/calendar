@@ -13,13 +13,13 @@ def direct_calendar_url():
 
 @app.route("/subscribe/apple")
 def subscribe_to_calendar_apple():
-    return redirect("webcal://localhost:5000/onefccalendar")
+    return redirect("webcal://onefccalendar.com/onefccalendar")
 
 
 @app.route("/subscribe/google")
 def subscribe_to_calendar_google():
     return redirect(
-        "https://www.google.com/calendar/render?cid=http://localhost:5000/onefccalendar"
+        "https://www.google.com/calendar/render?cid=https://onefccalendar.com/onefccalendar"
     )
 
 
@@ -29,4 +29,4 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, host="0.0.0.0")
