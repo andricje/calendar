@@ -1,0 +1,32 @@
+image: jdrouet/docker-with-buildx:stable
+services:
+  - docker:dind
+
+stages:
+  - build
+  - release
+
+variables:
+  TEST_IMAGE: registry.richardsoper.me/richardsoper/onechampcalendar:$CI_COMMIT_REF_NAME
+  RELEASE_IMAGE: registry.richardsoper.me/richardsoper/onechampcalendar:latest
+
+before_script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
+after_script:
+  - docker ps | grep moby/buildkit | awk '{print $1}' | xargs docker stop | xargs docker rm
+
+build:
+  stage: build
+  script:
+    - docker run --privileged --rm tonistiigi/binfmt --install all
+    - docker buildx create --use
+    - docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag $TEST_IMAGE .
+
+release:
+  stage: release
+  script:
+    - docker pull $TEST_IMAGE
+    - docker tag $TEST_IMAGE $RELEASE_IMAGE
+    - docker push $RELEASE_IMAGE
+  only:
+    - master
