@@ -19,7 +19,7 @@ def subscribe_to_calendar_apple():
 @app.route("/subscribe/google")
 def subscribe_to_calendar_google():
     return redirect(
-        "https://calendar.google.com/calendar/r?cid=https://onefccalendar.com/onefccalendar"
+        "https://calendar.google.com/calendar/r?cid=http://onefccalendar.com/onefccalendar"
     )
 
 
