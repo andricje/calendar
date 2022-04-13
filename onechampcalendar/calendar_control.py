@@ -1,3 +1,4 @@
+import logging
 import requests
 import pytz
 from typing import List
@@ -15,6 +16,12 @@ class CalendarControl:
         self.soup = BeautifulSoup(self.get_events_page(), features="html.parser")
         self.event_calendar = Calendar()
         self.all_events: List[CalendarEvent] = []
+        self.log = logging.getLogger(__name__)
+        self.log.basicConfig(
+            stream=sys.stdout,
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            level=logging.INFO,
+        )
 
     def get_events_page(self) -> str:
         raw_events_page = requests.get("https://www.onefc.com/events/")
@@ -35,6 +42,7 @@ class CalendarControl:
         event_link = next_event_container.find("a", attrs={"class": "btn-event-link"})[
             "href"
         ]
+        self.log.info(f"Creating the event {event_name}")
         return CalendarEvent(
             start_time=start_time,
             end_time=end_time,
@@ -46,6 +54,7 @@ class CalendarControl:
     def get_all_events(self) -> List[CalendarEvent]:
         upcoming_events = self.soup.find(attrs={"class", "upcoming-events"})
         event_containers = upcoming_events.find_all(attrs={"class", "event"})
+        self.log.info(f"Retrieved {len(event_containers)} other events")
         return [
             CalendarEvent(
                 start_time=datetime.fromisoformat(
@@ -73,8 +82,10 @@ class CalendarControl:
             "%Y-%m-%d %H:%M:%S"
         )
         self.event_calendar.events.add(event)
+        self.log.info(f"Added event {event} to the calendar")
 
     def update_calendar(self):
+        self.log.info("Starting caledar update")
         file_path = Path(__file__).parent.resolve() / "data/onefc.ics"
         self.event_calendar.events.clear()
         self.add_event_to_calendar(self.get_next_event())
@@ -82,6 +93,7 @@ class CalendarControl:
             self.add_event_to_calendar(event)
         with open(file_path, "w") as calendar_file:
             calendar_file.writelines(self.event_calendar)
+        self.log.info(f"Writing out calendar to {file_path}")
         return file_path
 
 
