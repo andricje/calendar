@@ -1,3 +1,4 @@
+import sys
 import logging
 import requests
 import pytz
@@ -10,6 +11,12 @@ from pathlib import Path
 
 UTC = pytz.utc
 
+logging.basicConfig(
+    stream=sys.stdout,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+
 
 class CalendarControl:
     def __init__(self) -> None:
@@ -17,11 +24,6 @@ class CalendarControl:
         self.event_calendar = Calendar()
         self.all_events: List[CalendarEvent] = []
         self.log = logging.getLogger(__name__)
-        self.log.basicConfig(
-            stream=sys.stdout,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            level=logging.INFO,
-        )
 
     def get_events_page(self) -> str:
         raw_events_page = requests.get("https://www.onefc.com/events/")
@@ -86,7 +88,7 @@ class CalendarControl:
 
     def update_calendar(self):
         self.log.info("Starting caledar update")
-        file_path = Path(__file__).parent.resolve() / "onefc.ics"
+        file_path = Path(__file__).parent.resolve() / "data/onefc.ics"
         self.event_calendar.events.clear()
         self.add_event_to_calendar(self.get_next_event())
         for event in self.get_all_events():
