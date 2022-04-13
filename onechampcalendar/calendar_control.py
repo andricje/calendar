@@ -86,7 +86,7 @@ class CalendarControl:
 
     def update_calendar(self):
         self.log.info("Starting caledar update")
-        file_path = Path(__file__).parent.resolve() / "data/onefc.ics"
+        file_path = Path(__file__).parent.resolve() / "onefc.ics"
         self.event_calendar.events.clear()
         self.add_event_to_calendar(self.get_next_event())
         for event in self.get_all_events():
