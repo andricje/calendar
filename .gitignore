@@ -1,3 +1,4 @@
 .pytest_cache
 **__pycache__**
 ***.ics**
+**.DS_Store**
