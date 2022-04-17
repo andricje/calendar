@@ -2,3 +2,4 @@
 **__pycache__**
 ***.ics**
 **.DS_Store**
+.coverage

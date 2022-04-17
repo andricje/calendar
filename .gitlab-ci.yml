@@ -3,31 +3,42 @@ services:
   - docker:dind
 
 stages:
-  - build
-  - release
+  - Unit Tests
+  - Build and Push branch
+  - Build and Release latest
 
 variables:
   TEST_IMAGE: registry.richardsoper.me/richardsoper/onechampcalendar:$CI_COMMIT_REF_NAME
   RELEASE_IMAGE: registry.richardsoper.me/richardsoper/onechampcalendar:latest
 
-before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
-after_script:
-  - docker ps | grep moby/buildkit | awk '{print $1}' | xargs docker stop | xargs docker rm
+unittest:
+  image: python:3.8
+  stage: Unit Tests
+  script:
+    - pip3 install poetry
+    - poetry install
+    - poetry run python3 -u -m pytest --cov=onechampcalendar --cov-report=html
+  artifacts:
+    paths:
+      - htmlcov
 
 build:
-  stage: build
+  stage: Build and Push branch
   script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
     - docker run --privileged --rm tonistiigi/binfmt --install all
     - docker buildx create --use
     - docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag $TEST_IMAGE .
+    - docker ps | grep moby/buildkit | awk '{print $1}' | xargs docker stop | xargs docker rm
   except:
     - main
 
 release:
-  stage: release
+  stage: Build and Release latest
   script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
     - docker buildx create --use
     - docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag $RELEASE_IMAGE .
+    - docker ps | grep moby/buildkit | awk '{print $1}' | xargs docker stop | xargs docker rm
   only:
     - main

@@ -22,7 +22,6 @@ class CalendarControl:
     def __init__(self) -> None:
         self.soup = BeautifulSoup(self.get_events_page(), features="html.parser")
         self.event_calendar = Calendar()
-        self.all_events: List[Event] = []
         self.log = logging.getLogger(__name__)
         self.last_update: datetime = None
 
