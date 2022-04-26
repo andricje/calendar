@@ -26,10 +26,20 @@ class CalendarControl:
         self.last_update: datetime = None
 
     def get_events_page(self) -> str:
+        """Retrieve the events page HTML as text
+
+        Returns:
+            str: Events page HTML as text
+        """
         raw_events_page = requests.get("https://www.onefc.com/events/")
         return raw_events_page.text
 
     def get_next_event(self) -> Event:
+        """Get the next main event from the banner
+
+        Returns:
+            Event: Populated next event
+        """
         next_event_container = self.soup.find(id="event-banner")
         event_name = next_event_container.find(attrs={"itemprop": "name"})["content"]
         event_description = next_event_container.find(
@@ -48,12 +58,17 @@ class CalendarControl:
         return Event(
             begin=start_time,
             end=end_time,
-            name=f"ONE: {event_name}",
-            description=event_description,
+            name=event_name,
+            description=event_description if event_description else "Comming soon...",
             url=event_link,
         )
 
     def get_all_events(self) -> List[Event]:
+        """Get all over events available on the page
+
+        Returns:
+            List[Event]: List of all remaining events populated with available data
+        """
         upcoming_events = self.soup.find(attrs={"class", "upcoming-events"})
         event_containers = upcoming_events.find_all(attrs={"class", "event"})
         self.log.info(f"Retrieved {len(event_containers)} other events")
@@ -73,14 +88,26 @@ class CalendarControl:
         ]
 
     def time_to_update(self) -> bool:
+        """Determine if the application should check for event updates
+
+        Returns:
+            bool: True if the last check was at least 24 hours ago
+        """
         if not self.last_update:
             return True
         time_difference = datetime.now(tz=UTC) - self.last_update
-        if time_difference.seconds > 86400:
+        self.log.info(f"Days since last update: {time_difference.days}")
+        if time_difference.days:
             return True
         self.log.info(f"Last update was {self.last_update.astimezone(PST)}")
+        return False
 
-    def update_calendar(self):
+    def update_calendar(self) -> Path:
+        """Update the calendar file with the latest details
+
+        Returns:
+            Path: Calendar file location the serve to the client
+        """
         file_path = Path(__file__).parent.resolve() / "data/onefc.ics"
         if not self.time_to_update():
             return file_path
@@ -96,8 +123,3 @@ class CalendarControl:
         )
         self.last_update = datetime.now(tz=UTC)
         return file_path
-
-
-if __name__ in "__main__":
-    c = CalendarControl()
-    c.update_calendar()
