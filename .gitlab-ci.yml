@@ -23,13 +23,15 @@ unittest:
       - htmlcov
 
 build:
+  before_script:
+    - docker run --privileged --rm tonistiigi/binfmt --install all
+  after_script:
+    - docker ps | grep moby/buildkit | awk '{print $1}' | xargs docker stop | xargs docker rm
   stage: Build and Push branch
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
-    - docker run --privileged --rm tonistiigi/binfmt --install all
     - docker buildx create --use
     - docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag $TEST_IMAGE .
-    - docker ps | grep moby/buildkit | awk '{print $1}' | xargs docker stop | xargs docker rm
   except:
     - main
 
@@ -39,6 +41,5 @@ release:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
     - docker buildx create --use
     - docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag $RELEASE_IMAGE .
-    - docker ps | grep moby/buildkit | awk '{print $1}' | xargs docker stop | xargs docker rm
   only:
     - main
