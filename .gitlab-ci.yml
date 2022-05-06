@@ -36,6 +36,10 @@ build:
     - main
 
 release:
+  before_script:
+    - docker run --privileged --rm tonistiigi/binfmt --install all
+  after_script:
+    - docker ps | grep moby/buildkit | awk '{print $1}' | xargs docker stop | xargs docker rm
   stage: Build and Release latest
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
