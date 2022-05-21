@@ -45,5 +45,5 @@ release:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
     - docker buildx create --use
     - docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag $RELEASE_IMAGE .
-  only:
-    - main
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
