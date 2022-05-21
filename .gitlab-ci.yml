@@ -47,3 +47,5 @@ release:
     - docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag $RELEASE_IMAGE .
   rules:
     - if: $CI_PIPELINE_SOURCE != "schedule"
+  only:
+    - main
