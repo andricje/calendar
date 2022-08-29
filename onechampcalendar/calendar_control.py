@@ -115,6 +115,8 @@ class CalendarControl:
         self.event_calendar.events.clear()
         self.event_calendar.events.add(self.get_next_event())
         for event in self.get_all_events():
+            if event.name == self.get_next_event().name:
+                continue
             self.event_calendar.events.add(event)
         with open(file_path, "w") as calendar_file:
             calendar_file.writelines(self.event_calendar)
