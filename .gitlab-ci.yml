@@ -12,7 +12,7 @@ variables:
   RELEASE_IMAGE: registry.richardsoper.me/richardsoper/onechampcalendar:latest
 
 unittest:
-  image: python:3.8
+  image: python:3.11
   stage: Unit Tests
   script:
     - pip3 install poetry
