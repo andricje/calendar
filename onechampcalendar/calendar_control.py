@@ -37,9 +37,22 @@ class CalendarControl:
         return raw_events_page.text
 
     def get_event_links(self) -> List[str]:
+        """Find all the upcoming event links
+
+        Returns:
+            List[str]: List of all upcoming event URL's
+        """
         return [event["href"] for event in self.soup.select("div#upcoming-events-section div.simple-post-card a.title")]
 
     def get_event_from_url(self, url: str) -> Event:
+        """Get the event data from the individual event URL
+
+        Args:
+            url (str): URL to individual event page
+
+        Returns:
+            Event: Event for the calendar with all available details
+        """
         event_soup = BeautifulSoup(requests.get(
             url).text, features="html.parser")
         event_title = event_soup.select_one(
@@ -49,10 +62,12 @@ class CalendarControl:
         event_data = json.loads(requests.get(
             f"https://www.onefc.com/wp-admin/admin-ajax.php?action=query_event_info&id={event_id}").text)
         start_offset_sec = event_data["data"]["time_to_start"]
-
         start_time = datetime.now() + timedelta(seconds=start_offset_sec)
 
-        return Event(name=event_title, description="Coming soon...", begin=start_time, end=(start_time+timedelta(hours=8)), url=url)
+        if event_description := event_soup.select_one("div.editor-content p"):
+            event_description = event_description.get_text(strip=True)
+
+        return Event(name=event_title, description=event_description if event_description else "Coming soon...", begin=start_time, end=(start_time+timedelta(hours=8)), url=url)
 
     def time_to_update(self) -> bool:
         """Determine if the application should check for event updates
