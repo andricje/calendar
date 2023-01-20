@@ -1,9 +1,10 @@
+import json
 import sys
 import logging
 import requests
 import pytz
 from typing import List
-from datetime import datetime
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 from ics import Calendar, Event
 from pathlib import Path
@@ -20,7 +21,8 @@ logging.basicConfig(
 
 class CalendarControl:
     def __init__(self) -> None:
-        self.soup = BeautifulSoup(self.get_events_page(), features="html.parser")
+        self.soup = BeautifulSoup(
+            self.get_events_page(), features="html.parser")
         self.event_calendar = Calendar()
         self.log = logging.getLogger(__name__)
         self.last_update: datetime = None
@@ -34,58 +36,23 @@ class CalendarControl:
         raw_events_page = requests.get("https://www.onefc.com/events/")
         return raw_events_page.text
 
-    def get_next_event(self) -> Event:
-        """Get the next main event from the banner
+    def get_event_links(self) -> List[str]:
+        return [event["href"] for event in self.soup.select("div#upcoming-events-section div.simple-post-card a.title")]
 
-        Returns:
-            Event: Populated next event
-        """
-        next_event_container = self.soup.find(id="event-banner")
-        event_name = next_event_container.find(attrs={"itemprop": "name"})["content"]
-        event_description = next_event_container.find(
-            attrs={"itemprop": "description"}
-        )["content"]
-        start_time = datetime.fromisoformat(
-            next_event_container.find(attrs={"itemprop": "startDate"})["content"]
-        )
-        end_time = datetime.fromisoformat(
-            next_event_container.find(attrs={"itemprop": "endDate"})["content"]
-        )
-        event_link = next_event_container.find("a", attrs={"class": "btn-event-link"})[
-            "href"
-        ]
-        self.log.info(f"Creating the event {event_name}")
-        return Event(
-            begin=start_time,
-            end=end_time,
-            name=event_name,
-            description=event_description if event_description else "Comming soon...",
-            url=event_link,
-        )
+    def get_event_from_url(self, url: str) -> Event:
+        event_soup = BeautifulSoup(requests.get(
+            url).text, features="html.parser")
+        event_title = event_soup.select_one(
+            "div.info-content h3").get_text(strip=True)
+        event_id = event_soup.find(
+            attrs={"class", "status-countdown"})["data-id"]
+        event_data = json.loads(requests.get(
+            f"https://www.onefc.com/wp-admin/admin-ajax.php?action=query_event_info&id={event_id}").text)
+        start_offset_sec = event_data["data"]["time_to_start"]
 
-    def get_all_events(self) -> List[Event]:
-        """Get all over events available on the page
+        start_time = datetime.now() + timedelta(seconds=start_offset_sec)
 
-        Returns:
-            List[Event]: List of all remaining events populated with available data
-        """
-        upcoming_events = self.soup.find(attrs={"class", "upcoming-events"})
-        event_containers = upcoming_events.find_all(attrs={"class", "event"})
-        self.log.info(f"Retrieved {len(event_containers)} other events")
-        return [
-            Event(
-                begin=datetime.fromisoformat(
-                    event.find(attrs={"itemprop": "startDate"})["content"]
-                ),
-                end=datetime.fromisoformat(
-                    event.find(attrs={"itemprop": "endDate"})["content"]
-                ),
-                name=event.find(attrs={"itemprop": "name"}).text,
-                description="Coming soon...",
-                url=event.find("a", attrs={"itemprop": "url"})["href"],
-            )
-            for event in event_containers
-        ]
+        return Event(name=event_title, description="Coming soon...", begin=start_time, end=(start_time+timedelta(hours=8)), url=url)
 
     def time_to_update(self) -> bool:
         """Determine if the application should check for event updates
@@ -113,10 +80,8 @@ class CalendarControl:
             return file_path
         self.log.info("Starting calendar update")
         self.event_calendar.events.clear()
-        self.event_calendar.events.add(self.get_next_event())
-        for event in self.get_all_events():
-            if event.name == self.get_next_event().name:
-                continue
+        for url in self.get_event_links():
+            event = self.get_event_from_url(url)
             self.event_calendar.events.add(event)
         with open(file_path, "w") as calendar_file:
             calendar_file.writelines(self.event_calendar)
