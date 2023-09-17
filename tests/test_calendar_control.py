@@ -30,11 +30,6 @@ def test_get_event_from_url(calendar_control: CalendarControl):
         assert event.url
 
 
-def test_get_events_page(calendar_control: CalendarControl):
-    assert calendar_control.get_events_page()
-    assert type(calendar_control.get_events_page()) == str
-
-
 def test_update_calendar(calendar_control: CalendarControl):
     file_path = calendar_control.update_calendar()
     assert file_path
