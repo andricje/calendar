@@ -1,16 +1,30 @@
 """A simple Flask backend to route traffic"""
-from calendar_control import CalendarControl
+from calendar_control import OneFcCalendar, UfcCalendar
 from flask import Flask, redirect, render_template, send_file
 
-calendar_manager = CalendarControl()
+one_fc_calendar = OneFcCalendar()
+ufc_calendar = UfcCalendar()
 app = Flask(__name__)
 
 
 @app.route("/onefccalendar")
-def direct_calendar_url():
+def direct_ofc_url():
     """Send ICS file to client"""
-    file_path = calendar_manager.update_calendar()
+    file_path = one_fc_calendar.update_calendar()
     return send_file(file_path)
+
+
+@app.route("/ufc")
+def direct_ufc_url():
+    """Send UFC ICS file to client"""
+    file_path = ufc_calendar.update_calendar()
+    return send_file(file_path)
+
+
+@app.route("/subscribe/ufc")
+def subscribe_to_ufc_calendar():
+    """Open subscription link for native calendar apps"""
+    return redirect("webcal://onefccalendar.com/ufc")
 
 
 @app.route("/subscribe/apple")
@@ -32,7 +46,7 @@ def home():
     """Return the home page jinja template"""
     return render_template(
         "home.html",
-        last_updated=calendar_manager.get_last_updated_string(),
+        last_updated=one_fc_calendar.get_last_updated_string(),
     )
 
 
