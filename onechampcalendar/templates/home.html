@@ -1,81 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
-    <script
-      src="https://kit.fontawesome.com/b0eba033b1.js"
-      crossorigin="anonymous"
-    ></script>
-    <title>Subscribe to ONE Championship Calendar</title>
-  </head>
 
-  <body>
-    <header>
-      <h1>ONE Championship Calendar</h1>
-      <p>Subscribe to the unofficial calendar</p>
-      <p>
-        <img
-          src="https://gitlab.richardsoper.me/richardsoper/onechampcalendar/badges/main/pipeline.svg?key_text=Calendar+Update+Job&key_width=130"
-        />
-      </p>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
+  <script src="https://kit.fontawesome.com/b0eba033b1.js" crossorigin="anonymous"></script>
+  <title>Subscribe to ONE Championship Calendar</title>
+</head>
 
-    <main>
-      <p>
-        The data in this calendar is coming directly from
-        <a href="https://www.onefc.com/events/" target="_blank"
-          >www.onefc.com/events</a
-        >. There are no ads, data collection, or trackers embeded in the events.
-        This is 100% free!
-      </p>
-      <p>
-        You can subscribe to the unofficial fight calendar using your method of
-        choice.
-      </p>
-      <center>
-        <a class="button" href="/subscribe/apple">
-          <center><i class="fa-brands fa-apple"></i></center>
-          Apple/iCloud
-        </a>
-        <a class="button" href="/subscribe/google" target="_blank">
-          <center><i class="fa-brands fa-google"></i></center>
-          Google Calendar
-        </a>
-        <a
-          class="button"
-          href="/onefccalendar"
-          title="One-time download will ONLY include the events scheduled at the time of download, it will not automatically refresh with new events."
-        >
-          <center><i class="fa-solid fa-download"></i></center>
-          One-time download
-        </a>
-        <small><p>Last updated: {{ last_updated }} PST</p></small>
-      </center>
-      <h4>Run your own server</h4>
-      <p>
-        The docker image is also available for anyone to download and run on
-        their own server. Instructions are available on the
-        <a
-          href="https://gitlab.richardsoper.me/richardsoper/onechampcalendar/-/wikis/Deploy-with-Docker"
-          target="_blank"
-          >gitlab wiki</a
-        >.
-      </p>
-    </main>
+<body>
+  <header>
+    <h1>ONE Championship Calendar</h1>
+    <p>Subscribe to the unofficial calendar</p>
+    <p>
+      <img
+        src="https://gitlab.richardsoper.me/richardsoper/onechampcalendar/badges/main/pipeline.svg?key_text=Calendar+Update+Job&key_width=130" />
+    </p>
+  </header>
 
-    <footer>
-      <p>
-        This is a free and open sourced project created by
-        <a href="https://richardsoper.me" target="_blank">Richard Soper</a> for
-        fun! Source code is available on my
-        <a
-          href="https://gitlab.richardsoper.me/richardsoper/onechampcalendar"
-          target="_blank"
-          >gitlab instance</a
-        >. This project is not affiliated to ONE Championship directly.
-      </p>
-    </footer>
-  </body>
+  <main>
+    <p>
+      The data in this calendar is coming directly from
+      <a href="https://www.onefc.com/events/" target="_blank">www.onefc.com/events</a>. There are no ads, data
+      collection, or trackers embeded in the events.
+      This is 100% free!
+    </p>
+    <p>
+      You can subscribe to the unofficial fight calendar using your method of
+      choice.
+    </p>
+    <center>
+      <a class="button" href="/subscribe/apple">
+        <center><i class="fa-brands fa-apple"></i></center>
+        Apple/iCloud
+      </a>
+      <a class="button" href="/subscribe/google" target="_blank">
+        <center><i class="fa-brands fa-google"></i></center>
+        Google Calendar
+      </a>
+      <a class="button" href="/onefccalendar"
+        title="One-time download will ONLY include the events scheduled at the time of download, it will not automatically refresh with new events.">
+        <center><i class="fa-solid fa-download"></i></center>
+        One-time download
+      </a>
+      <small>
+        <p>Last updated: {{ last_updated }} PST</p>
+      </small>
+    </center>
+    <h4>Run your own server</h4>
+    <p>
+      The docker image is also available for anyone to download and run on
+      their own server. Instructions are available on the
+      <a href="https://gitlab.richardsoper.me/richardsoper/onechampcalendar/-/wikis/Deploy-with-Docker"
+        target="_blank">gitlab wiki</a>.
+    </p>
+  </main>
+
+  <footer>
+    <p>
+      This is a free and open sourced project created by
+      <a href="https://richardsoper.me" target="_blank">Richard Soper</a> for
+      fun! Source code is available on my
+      <a href="https://gitlab.richardsoper.me/richardsoper/onechampcalendar" target="_blank">gitlab instance</a>. This
+      project is not affiliated to ONE Championship directly.
+    </p>
+  </footer>
+</body>
+
 </html>
