@@ -1,5 +1,5 @@
 from pathlib import PosixPath
-from onechampcalendar.calendar_control import CalendarControl
+from mmacalendar.calendar_control import CalendarControl
 from ics import Event
 
 

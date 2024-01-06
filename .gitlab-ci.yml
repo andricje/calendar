@@ -8,8 +8,8 @@ stages:
   - Build and Release latest
 
 variables:
-  TEST_IMAGE: registry.richardsoper.me/richardsoper/onechampcalendar:$CI_COMMIT_REF_NAME
-  RELEASE_IMAGE: registry.richardsoper.me/richardsoper/onechampcalendar:latest
+  TEST_IMAGE: registry.richardsoper.me/richardsoper/mma-calendar:$CI_COMMIT_REF_NAME
+  RELEASE_IMAGE: registry.richardsoper.me/richardsoper/mma-calendar:latest
 
 unittest:
   image: python:3.11
@@ -17,7 +17,7 @@ unittest:
   script:
     - pip3 install poetry
     - poetry install
-    - poetry run python3 -u -m pytest --cov=onechampcalendar --cov-report=html
+    - poetry run python3 -u -m pytest --cov=mmacalendar --cov-report=html
   artifacts:
     paths:
       - htmlcov
@@ -31,7 +31,7 @@ build:
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
     - docker buildx create --use
-    - docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag $TEST_IMAGE .
+    - docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag $TEST_IMAGE .
   except:
     - main
 
@@ -44,6 +44,6 @@ release:
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
     - docker buildx create --use
-    - docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 --tag $RELEASE_IMAGE .
+    - docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag $RELEASE_IMAGE .
   rules:
     - if: $CI_PIPELINE_SOURCE != "schedule" && $CI_COMMIT_BRANCH == "main"

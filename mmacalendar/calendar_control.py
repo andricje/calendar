@@ -1,4 +1,4 @@
-# pylint: disable=missing-timeout
+# pylint: disable=missing-timeout,logging-fstring-interpolation,missing-module-docstring
 import json
 import logging
 import sys
@@ -18,7 +18,7 @@ logging.basicConfig(
 )
 
 
-class CalendarControl(object, metaclass=ABCMeta):
+class CalendarControl(metaclass=ABCMeta):
     UTC = pytz.utc
     PST = pytz.timezone("US/Pacific")
 
@@ -67,7 +67,14 @@ class CalendarControl(object, metaclass=ABCMeta):
 
 
 class UfcCalendar(CalendarControl):
+    """Fetch event data and build calendar for UFC Schedule"""
+
     def get_event_links(self) -> list[str]:
+        """Get all the event links from UFC website.
+
+        Returns:
+            list[str]: Event URLs to check for event times.
+        """
         base_url = "https://www.ufc.com"
         soup = BeautifulSoup(
             requests.get(f"{base_url}/events").text, features="html.parser"
@@ -81,8 +88,14 @@ class UfcCalendar(CalendarControl):
         ]
 
     def get_events_from_url(self, url: str) -> list[Event]:
-        # TODO: get and build a calendar event for all 3 parts.
-        # TODO: calculate end date based on next parts time.
+        """Generate event segments from URL.
+
+        Args:
+            url (str): URL for target event.
+
+        Returns:
+            list[Event]: All events scheduled for the target URL.
+        """
         event_soup = BeautifulSoup(requests.get(url).text, features="html.parser")
         main_title = " ".join(
             [
@@ -92,7 +105,7 @@ class UfcCalendar(CalendarControl):
             ]
         ).strip()
 
-        events = []
+        events: Event = []
         event_parts = event_soup.select("ul ul li.c-listing-viewing-option-group__item")
         for part in event_parts:
             part_title = part.find(
@@ -108,12 +121,15 @@ class UfcCalendar(CalendarControl):
             if event_description := event_soup.select_one("div.editor-content p"):
                 event_description = event_description.get_text(strip=True)
 
+            if events:
+                events[-1].end = part_start_time
+
             events.append(
                 Event(
                     name=f"{part_title} - {main_title}",
                     begin=part_start_time,
                     description=event_description,
-                    end=(part_start_time + timedelta(hours=1)),
+                    end=(part_start_time + timedelta(hours=2)),
                     url=url,
                 )
             )
@@ -143,6 +159,8 @@ class UfcCalendar(CalendarControl):
 
 
 class OneFcCalendar(CalendarControl):
+    """Fetch event data and build calendar for One FC Schedule"""
+
     def get_event_links(self) -> list[str]:
         """Find all the upcoming event links
 

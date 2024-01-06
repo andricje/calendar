@@ -1,6 +1,6 @@
 import pytest
 
-from onechampcalendar.calendar_control import OneFcCalendar
+from mmacalendar.calendar_control import OneFcCalendar
 
 
 @pytest.fixture(scope="session")

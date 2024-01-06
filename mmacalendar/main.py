@@ -21,23 +21,31 @@ def direct_ufc_url():
     return send_file(file_path)
 
 
-@app.route("/subscribe/ufc")
+@app.route("/ufc/apple")
 def subscribe_to_ufc_calendar():
     """Open subscription link for native calendar apps"""
-    return redirect("webcal://onefccalendar.com/ufc")
+    return redirect("webcal://mmacalendars.com/ufc")
 
 
-@app.route("/subscribe/apple")
+@app.route("/ufc/google")
+def subscribe_to_ufc_google_calendar():
+    """Open subscription link for native calendar apps"""
+    return redirect(
+        "https://calendar.google.com/calendar/r?cid=http://mmacalendars.com/ufc"
+    )
+
+
+@app.route("/onefc/apple")
 def subscribe_to_calendar_apple():
     """Open subscription link for native calendar apps"""
-    return redirect("webcal://onefccalendar.com/onefccalendar")
+    return redirect("webcal://mmacalendars.com/onefccalendar")
 
 
-@app.route("/subscribe/google")
+@app.route("/onefc/google")
 def subscribe_to_calendar_google():
     """Open subscription link in Google Calendar"""
     return redirect(
-        "https://calendar.google.com/calendar/r?cid=http://onefccalendar.com/onefccalendar"
+        "https://calendar.google.com/calendar/r?cid=http://mmacalendars.com/onefccalendar"
     )
 
 
@@ -46,7 +54,8 @@ def home():
     """Return the home page jinja template"""
     return render_template(
         "home.html",
-        last_updated=one_fc_calendar.get_last_updated_string(),
+        last_updated_onefc=one_fc_calendar.get_last_updated_string(),
+        last_updated_ufc=ufc_calendar.get_last_updated_string(),
     )
 
 
