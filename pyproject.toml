@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "onechampcalendar"
+name = "mmacalendar"
 version = "0.1.1"
-description = "Scraping the One Championship events to a calendar you can subscribe to!"
-authors = ["Richard <richardwebdesigner@me.com>"]
+description = "Scraping MMA events to calendars you can subscribe to!"
+authors = ["Richard"]
 license = "MIT"
 
 [tool.poetry.dependencies]
