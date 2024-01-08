@@ -1,9 +1,16 @@
 import pytest
 
 from mmacalendar.calendar_control import OneFcCalendar
+from mmacalendar.calendar_control import UfcCalendar
 
 
 @pytest.fixture(scope="session")
-def calendar_control():
-    calendar_control = OneFcCalendar()
-    return calendar_control
+def one_fc():
+    one_fc = OneFcCalendar()
+    return one_fc
+
+
+@pytest.fixture(scope="session")
+def ufc():
+    ufc = UfcCalendar()
+    return ufc
