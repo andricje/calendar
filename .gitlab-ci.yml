@@ -6,11 +6,11 @@ stages:
   - Unit Tests
   - Build and Push branch
   - Build and Release latest
-  - Publish release
 
 variables:
   TEST_IMAGE: registry.richardsoper.me/richardsoper/mma-calendar:$CI_COMMIT_REF_NAME
-  RELEASE_IMAGE: registry.richardsoper.me/richardsoper/mma-calendar:latest
+  VERSION_IMAGE: registry.richardsoper.me/richardsoper/mma-calendar:'v0.$CI_PIPELINE_IID'
+  LATEST_IMAGE: registry.richardsoper.me/richardsoper/mma-calendar:latest
 
 unittest:
   image: python:3.11
@@ -45,19 +45,11 @@ release:
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
     - docker buildx create --use
-    - docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag $RELEASE_IMAGE .
-  rules:
-    - if: $CI_PIPELINE_SOURCE != "schedule" && $CI_COMMIT_BRANCH == "main"
-
-release_job:
-  stage: Publish release
-  image: registry.gitlab.com/gitlab-org/release-cli:latest
+    - docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag $LATEST_IMAGE --tag $VERSION_IMAGE .
   rules:
     - if: $CI_COMMIT_TAG
       when: never
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE != "schedule"
-  script:
-    - echo "running release_job for $TAG"
+    - if: $CI_PIPELINE_SOURCE != "schedule" && $CI_COMMIT_BRANCH == "main"
   release:
     tag_name: 'v0.$CI_PIPELINE_IID'
     description: 'v0.$CI_PIPELINE_IID'
