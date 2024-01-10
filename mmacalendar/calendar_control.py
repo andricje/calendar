@@ -87,6 +87,37 @@ class UfcCalendar(CalendarControl):
             )
         ]
 
+    def get_fighters_for_part(self, part: str, soup: BeautifulSoup) -> list[str]:
+        """Get the fighters for a given event.
+
+        Args:
+            part (str): Description of the part to retrieve fighters names.
+            soup (BeautifulSoup): Page markup.
+
+        Returns:
+            list[str]: List of "Red Corner vs Blue Corner" for the given part.
+        """
+        match part:
+            case "Main Card":
+                part_id = "main-card"
+            case "Prelims":
+                part_id = "prelims-card"
+            case "Early Prelims":
+                part_id = "early-prelims"
+        event_section = soup.select_one(f"#{part_id}")
+        if not event_section:
+            return []
+        red_corner = [
+            fighters.get_text().replace("\n", " ").strip()
+            for fighters in event_section.select(".c-listing-fight__corner-name--red")
+        ]
+        blue_corner = [
+            fighters.get_text().replace("\n", " ").strip()
+            for fighters in event_section.select(".c-listing-fight__corner-name--blue")
+        ]
+
+        return [f"{red} vs {blue}" for red, blue in zip(red_corner, blue_corner)]
+
     def get_events_from_url(self, url: str) -> list[Event]:
         """Generate event segments from URL.
 
@@ -118,8 +149,15 @@ class UfcCalendar(CalendarControl):
                     ]
                 )
             )
-            if event_description := event_soup.select_one("div.editor-content p"):
-                event_description = event_description.get_text(strip=True)
+            part_fighters = "\n".join(
+                self.get_fighters_for_part(part_title.strip(), event_soup)
+            )
+            if editor_description := event_soup.select_one("div.editor-content p"):
+                editor_description = editor_description.get_text(strip=True)
+            else:
+                editor_description = "Featured fighters:"
+
+            event_description = f"{editor_description}\n{part_fighters}"
 
             if events:
                 events[-1].end = part_start_time
