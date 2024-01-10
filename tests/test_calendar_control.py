@@ -1,6 +1,8 @@
 from pathlib import PosixPath
-from mmacalendar.calendar_control import CalendarControl
+
 from ics import Event
+
+from mmacalendar.calendar_control import CalendarControl
 
 
 def setup_module(module):
@@ -53,6 +55,7 @@ def test_get_event_from_url_ufc(ufc: CalendarControl):
             assert event.begin
             assert event.end
             assert event.name
+            assert event.description
             assert event.url
 
 

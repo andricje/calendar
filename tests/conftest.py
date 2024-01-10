@@ -1,7 +1,6 @@
 import pytest
 
-from mmacalendar.calendar_control import OneFcCalendar
-from mmacalendar.calendar_control import UfcCalendar
+from mmacalendar.calendar_control import OneFcCalendar, UfcCalendar
 
 
 @pytest.fixture(scope="session")
