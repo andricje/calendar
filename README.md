@@ -1,7 +1,7 @@
 # MMA Calendar
 
 A free and open source way to subscribe to calendars from multiple MMA organizations. 
- - One Championship calendar. https://www.onefccalendar.com
+ - One Championship calendar. https://www.onefc.com
  - UFC https://www.ufc.com
 
 ## How it works
