@@ -1,10 +1,13 @@
 """A simple Flask backend to route traffic"""
+import os
+
 from calendar_control import OneFcCalendar, UfcCalendar
 from flask import Flask, redirect, render_template, send_file
 
 one_fc_calendar = OneFcCalendar()
 ufc_calendar = UfcCalendar()
 app = Flask(__name__)
+url = os.getenv("URL") if os.getenv("URL") else "mmacalendars.com"
 
 
 @app.route("/onefccalendar")
@@ -24,28 +27,26 @@ def direct_ufc_url():
 @app.route("/ufc/apple")
 def subscribe_to_ufc_calendar():
     """Open subscription link for native calendar apps"""
-    return redirect("webcal://mmacalendars.com/ufc")
+    return redirect(f"webcal://{url}/ufc")
 
 
 @app.route("/ufc/google")
 def subscribe_to_ufc_google_calendar():
     """Open subscription link for native calendar apps"""
-    return redirect(
-        "https://calendar.google.com/calendar/r?cid=http://mmacalendars.com/ufc"
-    )
+    return redirect(f"https://calendar.google.com/calendar/r?cid=http://{url}/ufc")
 
 
 @app.route("/onefc/apple")
 def subscribe_to_calendar_apple():
     """Open subscription link for native calendar apps"""
-    return redirect("webcal://mmacalendars.com/onefccalendar")
+    return redirect(f"webcal://{url}/onefccalendar")
 
 
 @app.route("/onefc/google")
 def subscribe_to_calendar_google():
     """Open subscription link in Google Calendar"""
     return redirect(
-        "https://calendar.google.com/calendar/r?cid=http://mmacalendars.com/onefccalendar"
+        f"https://calendar.google.com/calendar/r?cid=http://{url}/onefccalendar"
     )
 
 
