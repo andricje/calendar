@@ -82,9 +82,7 @@ class UfcCalendar(CalendarControl):
 
         return [
             f"{base_url}{link['href']}"
-            for link in soup.select(
-                "details#events-list-upcoming li.l-listing__item h3.c-card-event--result__headline a"
-            )
+            for link in soup.select("article > div.c-card-event--result__info > h3 > a")
         ]
 
     def get_fighters_for_part(self, part: str, soup: BeautifulSoup) -> list[str]:
