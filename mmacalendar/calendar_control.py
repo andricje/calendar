@@ -57,6 +57,19 @@ class CalendarControl(metaclass=ABCMeta):
         self.log.info(f"Last update was {self.last_update.astimezone(self.PST)}")
         return False
 
+    def update_existing_event(self, event: Event):
+        """Update existing event if one is present in the calendar, otherwise create the event.
+
+        Args:
+            event (Event): Event to add or update.
+        """
+        for existing_event in self.event_calendar.events:
+            if event.url == existing_event.url and event.name == existing_event.name:
+                self.event_calendar.events.discard(existing_event)
+                self.event_calendar.events.add(event)
+                return
+        self.event_calendar.events.add(event)
+
     @abstractmethod
     def update_calendar(self) -> Path:
         """Update the calendar file with the latest details
@@ -181,10 +194,9 @@ class UfcCalendar(CalendarControl):
         if not self.time_to_update():
             return file_path
         self.log.info("Starting calendar update")
-        self.event_calendar.events.clear()
         for url in self.get_event_links():
             for event in self.get_events_from_url(url):
-                self.event_calendar.events.add(event)
+                self.update_existing_event(event)
         with open(file_path, "w", encoding="UTF-8") as calendar_file:
             calendar_file.writelines(self.event_calendar)
         self.log.info(
@@ -257,10 +269,9 @@ class OneFcCalendar(CalendarControl):
         if not self.time_to_update():
             return file_path
         self.log.info("Starting calendar update")
-        self.event_calendar.events.clear()
         for url in self.get_event_links():
             event = self.get_event_from_url(url)
-            self.event_calendar.events.add(event)
+            self.update_existing_event(event)
         with open(file_path, "w", encoding="UTF-8") as calendar_file:
             calendar_file.writelines(self.event_calendar)
         self.log.info(

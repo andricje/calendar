@@ -13,6 +13,24 @@ def teardown_module(module):
     print("*****TEARDOWN*****")
 
 
+def test_check_for_duplicate_event_ufc(ufc: CalendarControl):
+    for _ in range(3):
+        before_update = [event.name for event in ufc.event_calendar.events]
+        ufc.last_update = None
+        ufc.update_calendar()
+        after_update = [event.name for event in ufc.event_calendar.events]
+        assert before_update.sort() == after_update.sort()
+
+
+def test_check_for_duplicate_event_one_fc(one_fc: CalendarControl):
+    for _ in range(3):
+        before_update = [event.name for event in one_fc.event_calendar.events]
+        one_fc.last_update = None
+        one_fc.update_calendar()
+        after_update = [event.name for event in one_fc.event_calendar.events]
+        assert before_update.sort() == after_update.sort()
+
+
 def test_get_event_links_onefc(one_fc: CalendarControl):
     event_links = one_fc.get_event_links()
     assert event_links, "No event links were located."
