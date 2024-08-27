@@ -158,7 +158,8 @@ class UfcCalendar(CalendarControl):
                     part.find("div", {"class": "c-listing-viewing-option__time"})[
                         "data-timestamp"
                     ]
-                )
+                ),
+                self.UTC,
             )
             part_fighters = "\n".join(
                 self.get_fighters_for_part(part_title.strip(), event_soup)
@@ -171,7 +172,10 @@ class UfcCalendar(CalendarControl):
             event_description = f"{editor_description}\n{part_fighters}"
 
             if events:
-                events[-1].end = part_start_time
+                # UFC site has incorrectly shown the prelims starting hours after the main card.
+                # This check works around that problem by not updating the end time of the previous event if this site error occurs.
+                if not events[-1].begin > part_start_time:
+                    events[-1].end = part_start_time
 
             events.append(
                 Event(
