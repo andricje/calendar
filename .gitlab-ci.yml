@@ -32,7 +32,7 @@ build:
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.richardsoper.me
     - docker buildx create --use
-    - docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag $TEST_IMAGE .
+    - docker buildx build --push --platform linux/amd64 --tag $TEST_IMAGE .
   except:
     - main
 
