@@ -64,21 +64,10 @@ class CalendarControl(metaclass=ABCMeta):
             event (Event): Event to add or update.
         """
         for existing_event in self.event_calendar.events:
-            if (
-                (event.name == existing_event.name)
-                or (
-                    event.begin == existing_event.begin
-                    and event.end == existing_event.end
-                )
-                or (
-                    event.url == existing_event.url
-                    and event.name == existing_event.name
-                )
-            ):
+            if event.url == existing_event.url and event.name == existing_event.name:
                 self.event_calendar.events.discard(existing_event)
                 self.event_calendar.events.add(event)
                 return
-
         self.event_calendar.events.add(event)
 
     @abstractmethod
@@ -243,43 +232,6 @@ class OneFcCalendar(CalendarControl):
             )
         ]
 
-    def get_fighters_for_part(self, soup: BeautifulSoup) -> list[str]:
-        """Get the fighters from the event page.
-
-        Args:
-            soup (BeautifulSoup): Event HTML to search through.
-
-        Returns:
-            list[str]: List of the fighters found on the page.
-        """
-        return [
-            fighter.string.strip()
-            for fighter in soup.find_all("div", {"class": "versus"})
-        ]
-
-    def get_event_description(self, soup: BeautifulSoup, url: str) -> str:
-        """Create the event description based on available data from the page.
-
-        Args:
-            soup (BeautifulSoup): Event HTML.
-            url (str): URL of the event
-
-        Returns:
-            str: Description of the even with the fighters if available.
-        """
-        if event_description := soup.select_one("div.editor-content p"):
-            event_description = event_description.get_text(strip=True)
-        fighters = "\n".join(
-            self.get_fighters_for_part(
-                BeautifulSoup(requests.get(url).text, features="html.parser")
-            )
-        )
-
-        if event_description:
-            return f"{event_description}\n{fighters}"
-
-        return "Coming Soon..."
-
     def get_event_from_url(self, url: str) -> Event:
         """Get the event data from the individual event URL
 
@@ -300,11 +252,14 @@ class OneFcCalendar(CalendarControl):
         start_offset_sec = event_data["data"]["time_to_start"]
         start_time = datetime.now() + timedelta(seconds=start_offset_sec)
 
+        if event_description := event_soup.select_one("div.editor-content p"):
+            event_description = event_description.get_text(strip=True)
+
         return Event(
             name=event_title,
-            description=self.get_event_description(event_soup, url),
+            description=event_description if event_description else "Coming soon...",
             begin=start_time,
-            end=(start_time + timedelta(hours=3)),
+            end=(start_time + timedelta(hours=5)),
             url=url,
         )
 
