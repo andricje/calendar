@@ -64,7 +64,17 @@ class CalendarControl(metaclass=ABCMeta):
             event (Event): Event to add or update.
         """
         for existing_event in self.event_calendar.events:
-            if event.url == existing_event.url and event.name == existing_event.name:
+            if (
+                (event.name == existing_event.name)
+                or (
+                    event.begin == existing_event.begin
+                    and event.end == existing_event.end
+                )
+                or (
+                    event.url == existing_event.url
+                    and event.name == existing_event.name
+                )
+            ):
                 self.event_calendar.events.discard(existing_event)
                 self.event_calendar.events.add(event)
                 return
@@ -289,14 +299,11 @@ class OneFcCalendar(CalendarControl):
         start_offset_sec = event_data["data"]["time_to_start"]
         start_time = datetime.now() + timedelta(seconds=start_offset_sec)
 
-        if event_description := event_soup.select_one("div.editor-content p"):
-            event_description = event_description.get_text(strip=True)
-
         return Event(
             name=event_title,
-            description=event_description if event_description else "Coming soon...",
+            description=self.get_event_description(event_soup, url),
             begin=start_time,
-            end=(start_time + timedelta(hours=5)),
+            end=(start_time + timedelta(hours=3)),
             url=url,
         )
 
