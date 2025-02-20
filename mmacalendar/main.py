@@ -1,8 +1,9 @@
 """A simple Flask backend to route traffic"""
+
 import os
 
 from calendar_control import OneFcCalendar, UfcCalendar
-from flask import Flask, redirect, render_template, send_file
+from flask import Flask, redirect, render_template, send_file, request
 
 one_fc_calendar = OneFcCalendar()
 ufc_calendar = UfcCalendar()
@@ -14,6 +15,8 @@ url = os.getenv("URL") if os.getenv("URL") else "mmacalendars.com"
 def direct_ofc_url():
     """Send ICS file to client"""
     file_path = one_fc_calendar.update_calendar()
+    if "onefccalendar" in request.host:
+        file_path = one_fc_calendar.add_ofc_domain_expiration(file_path)
     return send_file(file_path)
 
 
@@ -21,6 +24,8 @@ def direct_ofc_url():
 def direct_ufc_url():
     """Send UFC ICS file to client"""
     file_path = ufc_calendar.update_calendar()
+    if "onefccalendar" in request.host:
+        file_path = one_fc_calendar.add_ofc_domain_expiration(file_path)
     return send_file(file_path)
 
 
