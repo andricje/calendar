@@ -1,8 +1,10 @@
-[tool.poetry]
+[project]
 name = "mmacalendar"
 version = "0.1.1"
 description = "Scraping MMA events to calendars you can subscribe to!"
-authors = ["Richard"]
+authors = [
+    {name = "Richard"}
+]
 license = "MIT"
 
 [tool.poetry.dependencies]
@@ -14,12 +16,13 @@ ics = "^0.7"
 Flask = "^2.1.1"
 gunicorn = "^20.1.0"
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.1.1"
-pytest-cov = "^3.0.0"
-pytest-watch = "^4.2.0"
-pylint = "^2.17.5"
-
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "pytest-cov>=6.0.0",
+    "pytest-watch>=4.2.0",
+]

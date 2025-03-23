@@ -1,18 +1,18 @@
-FROM python:3.13-slim as builder
-RUN pip install poetry
-ENV POETRY_NO_INTERACTION=1 \
-    POETRY_VIRTUALENVS_IN_PROJECT=1 \
-    POETRY_VIRTUALENVS_CREATE=1 \
-    POETRY_CACHE_DIR=/tmp/poetry_cache
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim as builder
+ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
+ENV UV_PYTHON_DOWNLOADS=0
 WORKDIR /app
-COPY pyproject.toml poetry.lock ./
-RUN poetry install --no-root --without dev && rm -rf ${POETRY_CACHE_DIR}
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev
+ADD . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
 # Slim Runtime layer
 FROM python:3.13-alpine as runtime
-ENV VIRTUAL_ENV=/app/.venv \
-    PATH="/app/.venv/bin:$PATH"
-COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
-COPY mmacalendar /app
-WORKDIR /app
+COPY --from=builder --chown=app:app /app /app
+ENV PATH="/app/.venv/bin:$PATH"
+WORKDIR /app/mmacalendar
 CMD ["gunicorn", "--bind", ":5000", "--log-level", "debug", "--workers", "2", "wsgi:app"]

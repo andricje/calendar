@@ -13,12 +13,11 @@ variables:
   RELEASE_IMAGE: registry.richardsoper.me/richardsoper/mma-calendar:latest
 
 unittest:
-  image: python:3.13-slim
+  image: ghcr.io/astral-sh/uv:python3.13-bookworm-slim
   stage: Unit Tests
   script:
-    - pip3 install poetry
-    - poetry install
-    - poetry run python3 -u -m pytest --cov=mmacalendar --cov-report=html
+    - uv sync
+    - uv run pytest --cov=mmacalendar --cov-report=html
   except:
     - staging
   # artifacts:
