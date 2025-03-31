@@ -307,12 +307,10 @@ class OneFcCalendar(CalendarControl):
         event_soup = BeautifulSoup(requests.get(url).content, features="html.parser")
         event_title = event_soup.select_one("div.info-content h3").get_text(strip=True)
         event_id = event_soup.find(attrs={"class", "status-countdown"})["data-id"]
-        event_data = json.loads(
-            requests.get(
-                f"https://www.onefc.com/wp-admin/admin-ajax.php?action=query_event_info&id={event_id}",
-            ).content
-        )
-        start_offset_sec = event_data["data"]["time_to_start"]
+        event_data = requests.get(
+            f"https://www.onefc.com/wp-json/public/v2/event-info/?id={event_id}",
+        ).json()
+        start_offset_sec = event_data["time_to_start"]
         start_time = datetime.now() + timedelta(seconds=start_offset_sec)
 
         return Event(
