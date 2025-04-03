@@ -310,8 +310,8 @@ class OneFcCalendar(CalendarControl):
         event_data = requests.get(
             f"https://www.onefc.com/wp-json/public/v2/event-info/?id={event_id}",
         ).json()
-        start_offset_sec = event_data["time_to_start"]
-        start_time = datetime.now() + timedelta(seconds=start_offset_sec)
+        start_offset_sec = event_data["utc_start"]
+        start_time = datetime.fromtimestamp(start_offset_sec)
 
         return Event(
             name=event_title,
