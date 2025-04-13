@@ -165,13 +165,22 @@ class UfcCalendar(CalendarControl):
             list[Event]: All events scheduled for the target URL.
         """
         event_soup = BeautifulSoup(requests.get(url).content, features="html.parser")
-        main_title = " ".join(
-            [
-                i.strip()
-                for i in event_soup.select_one("div.c-hero__header").text.split("\n")
-                if i
-            ]
-        ).strip()
+        try:
+            main_title = " ".join(
+                [
+                    i.strip()
+                    for i in event_soup.select_one("div.c-hero__header").text.split(
+                        "\n"
+                    )
+                    if i
+                ]
+            ).strip()
+        except AttributeError:
+            self.log.critical(
+                f"Failed to locate an event title for {url}. Check the event page for changes or errors.",
+                exc_info=True,
+            )
+            return []
 
         events: Event = []
         event_parts = event_soup.select("ul ul li.c-listing-viewing-option-group__item")
