@@ -1,5 +1,4 @@
 # pylint: disable=missing-timeout,logging-fstring-interpolation,missing-module-docstring
-import json
 import logging
 import sys
 from abc import ABCMeta, abstractmethod

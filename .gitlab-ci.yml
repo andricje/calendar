@@ -17,12 +17,14 @@ unittest:
   stage: Unit Tests
   script:
     - uv sync
-    - uv run pytest --cov=mmacalendar --cov-report=html
+    - uv run pytest --cov=mmacalendar --cov-report=xml
   except:
     - staging
-  # artifacts:
-  #   paths:
-  #     - htmlcov
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
 
 build:
   before_script:

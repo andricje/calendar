@@ -2,12 +2,12 @@
 
 import os
 
-from calendar_control import OneFcCalendar, UfcCalendar
+from mmacalendar.calendar_control import OneFcCalendar, UfcCalendar
 from flask import Flask, redirect, render_template, send_file, request
 
 one_fc_calendar = OneFcCalendar()
 ufc_calendar = UfcCalendar()
-app = Flask(__name__)
+app: Flask = Flask(__name__)
 url = os.getenv("URL") if os.getenv("URL") else "mmacalendars.com"
 
 
