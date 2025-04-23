@@ -17,7 +17,7 @@ unittest:
   stage: Unit Tests
   script:
     - uv sync
-    - uv run pytest --cov=mmacalendar --cov-report=xml
+    - uv run pytest --cov=mmacalendar --cov-report=xml --junitxml=junit.xml
   except:
     - staging
   artifacts:
@@ -25,6 +25,11 @@ unittest:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+    when: always
+    paths:
+      - junit.xml
+    reports:
+      junit: junit.xml
 
 build:
   before_script:
