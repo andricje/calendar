@@ -28,8 +28,10 @@ class CalendarControl(metaclass=ABCMeta):
 
         try:
             self.update_calendar()
-        except:
-            self.log.exception(f"{self.__class__} failed to initialize")
+        except Exception as exc:
+            self.log.exception(
+                f"{self.__class__} failed to initialize. \n\nException: {exc}"
+            )
 
     def get_last_updated_string(self) -> str:
         """Get a nicely formatted string version of the last updated value
@@ -259,6 +261,7 @@ class OneFcCalendar(CalendarControl):
         Returns:
             list[str]: List of the fighters found on the page.
         """
+        # TODO: Figure out how to get the type of fight/event. I.E. Muay Tai, MMA, Kickboxing
         return [
             fighter.string.strip()
             for fighter in soup.find_all("div", {"class": "versus"})
@@ -283,7 +286,7 @@ class OneFcCalendar(CalendarControl):
         )
 
         if event_description:
-            return f"{event_description}\n{fighters}"
+            return f"{event_description}\n\n{fighters}"
 
         return "Coming Soon..."
 
