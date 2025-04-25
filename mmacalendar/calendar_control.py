@@ -79,22 +79,6 @@ class CalendarControl(metaclass=ABCMeta):
                 return
         self.event_calendar.events.add(event)
 
-    def add_ofc_domain_expiration(self, file_path: Path) -> Path:
-        file_path = file_path.as_posix().replace(".ics", "-exp.ics")
-        domain_expiry_event = Event(
-            name="onefccalendar.com domain expiring",
-            description="On this day, the source domain of this calendar, onefccalendar.com, will be disabled. If you want to continue to receive calendar updates, visit mmacalendars.com. If you no longer wish to receive future calendar events, please unsubscribe from this calendar for your own security. Staying subscribed to the calendar at this domain may subject you to unforeseen problems in the future.",
-            begin=datetime.fromtimestamp(1744291548),
-            end=(datetime.fromtimestamp(1744291548) + timedelta(hours=2)),
-            url="https://mmacalendars.com",
-        )
-        domain_expiry_event.make_all_day()
-        self.event_calendar.events.add(domain_expiry_event)
-        with open(file_path, "w", encoding="UTF-8") as calendar_file:
-            calendar_file.writelines(self.event_calendar)
-        self.event_calendar.events.remove(domain_expiry_event)
-        return Path(file_path)
-
     @abstractmethod
     def update_calendar(self) -> Path:
         """Update the calendar file with the latest details
