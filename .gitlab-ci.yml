@@ -25,11 +25,8 @@ unittest:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
-    when: always
-    paths:
-      - junit.xml
-    reports:
       junit: junit.xml
+    when: always
 
 build:
   before_script:
