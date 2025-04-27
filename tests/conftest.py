@@ -21,12 +21,12 @@ def runner(flask_app):
 
 
 @pytest.fixture(scope="session")
-def one_fc():
+def one_fc() -> OneFcCalendar:
     one_fc = OneFcCalendar()
     return one_fc
 
 
 @pytest.fixture(scope="session")
-def ufc():
+def ufc() -> UfcCalendar:
     ufc = UfcCalendar()
     return ufc
