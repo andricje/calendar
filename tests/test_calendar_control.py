@@ -6,14 +6,6 @@ from ics import Event
 from mmacalendar.calendar_control import OneFcCalendar, UfcCalendar
 
 
-def setup_module(module):
-    print("*****SETUP*****")
-
-
-def teardown_module(module):
-    print("*****TEARDOWN*****")
-
-
 def test_check_for_duplicate_event_ufc(ufc: UfcCalendar):
     for _ in range(3):
         before_update = [event.name for event in ufc.event_calendar.events]
