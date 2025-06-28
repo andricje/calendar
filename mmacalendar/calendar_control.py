@@ -100,8 +100,12 @@ class UfcCalendar(CalendarControl):
             list[str]: Event URLs to check for event times.
         """
         base_url = "https://www.ufc.com"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15"
+        }
         soup = BeautifulSoup(
-            requests.get(f"{base_url}/events").content, features="html.parser"
+            requests.get(f"{base_url}/events", headers=headers).content,
+            features="html.parser",
         )
 
         return [
