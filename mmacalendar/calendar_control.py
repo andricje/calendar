@@ -93,6 +93,10 @@ class CalendarControl(metaclass=ABCMeta):
 class UfcCalendar(CalendarControl):
     """Fetch event data and build calendar for UFC Schedule"""
 
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15"
+    }
+
     def get_event_links(self) -> list[str]:
         """Get all the event links from UFC website.
 
@@ -100,11 +104,8 @@ class UfcCalendar(CalendarControl):
             list[str]: Event URLs to check for event times.
         """
         base_url = "https://www.ufc.com"
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.0 Safari/605.1.15"
-        }
         soup = BeautifulSoup(
-            requests.get(f"{base_url}/events", headers=headers).content,
+            requests.get(f"{base_url}/events", headers=self.headers).content,
             features="html.parser",
         )
 
@@ -153,7 +154,9 @@ class UfcCalendar(CalendarControl):
         Returns:
             list[Event]: All events scheduled for the target URL.
         """
-        event_soup = BeautifulSoup(requests.get(url).content, features="html.parser")
+        event_soup = BeautifulSoup(
+            requests.get(url, headers=self.headers).content, features="html.parser"
+        )
         try:
             main_title = " ".join(
                 [

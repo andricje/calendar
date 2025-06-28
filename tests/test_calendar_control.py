@@ -82,6 +82,7 @@ def test_get_event_from_url_ufc(ufc: UfcCalendar):
 
 def test_update_calendar_ufc(ufc: UfcCalendar):
     file_path = ufc.update_calendar()
+    assert ufc.event_calendar.events, "Event calendar is empty."
     assert file_path
     assert isinstance(file_path, PosixPath)
     assert file_path.exists()
