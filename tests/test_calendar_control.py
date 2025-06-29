@@ -3,7 +3,8 @@ import time
 
 from ics import Event
 
-from mmacalendar.calendar_control import OneFcCalendar, UfcCalendar
+from mmacalendar.ufc_calendar import UfcCalendar
+from mmacalendar.onefc_calendar import OneFcCalendar
 
 
 def test_check_for_duplicate_event_ufc(ufc: UfcCalendar):

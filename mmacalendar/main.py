@@ -2,7 +2,8 @@
 
 import os
 
-from mmacalendar.calendar_control import OneFcCalendar, UfcCalendar
+from mmacalendar.onefc_calendar import OneFcCalendar
+from mmacalendar.ufc_calendar import UfcCalendar
 from flask import Flask, redirect, render_template, send_file, request
 
 one_fc_calendar = OneFcCalendar()
