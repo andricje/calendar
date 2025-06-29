@@ -1,6 +1,7 @@
 import pytest
 
-from mmacalendar.calendar_control import OneFcCalendar, UfcCalendar
+from mmacalendar.ufc_calendar import UfcCalendar
+from mmacalendar.onefc_calendar import OneFcCalendar
 from mmacalendar.main import app
 
 
