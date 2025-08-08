@@ -14,6 +14,11 @@ export default function Home() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
   const [selectedSport, setSelectedSport] = useState('mma')
   
+  // Debug function
+  const handleSportChange = (sportKey: string) => {
+    setSelectedSport(sportKey)
+  }
+
   // Filtriram lige na osnovu izabranog sporta
   const currentSport = SPORTS_CONFIG.find(sport => sport.key === selectedSport) || SPORTS_CONFIG[0]
   const activeLeagues = currentSport.leagues.filter(league => !league.disabled)
@@ -186,8 +191,8 @@ export default function Home() {
       </div>
 
       {/* Sidebar - fixed on the right */}
-      <div className="fixed top-20 right-8 transform hidden xl:block">
-        <SportsSidebar onSportChange={setSelectedSport} selectedSport={selectedSport} />
+      <div className="fixed top-20 right-4 z-50">
+        <SportsSidebar onSportChange={handleSportChange} selectedSport={selectedSport} />
       </div>
     </div>
   )

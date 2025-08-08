@@ -1,92 +1,174 @@
-# MMA Calendar
+# Sports Calendar
 
-A free and open source way to subscribe to calendars from multiple MMA organizations.
- - One Championship calendar. https://www.onefc.com
- - UFC https://www.ufc.com
+Free and open source way to subscribe to calendars from multiple sports organizations. Never miss a game, fight, or match again.
 
 ## Features
 
-- **Modern Web Interface**: Beautiful Next.js frontend with Apple-style design
-- **Flask Backend**: Robust API for calendar generation and updates
-- **Real-time Updates**: Automatic calendar updates with latest event information
-- **Cross-platform**: Works with Apple Calendar, Google Calendar, and more
-- **No Tracking**: Privacy-focused with no ads or trackers
+- **Multiple Sports**: MMA, Football, Basketball, Tennis, Formula 1, eSports
+- **Calendar Subscriptions**: Apple Calendar, Google Calendar, ICS download
+- **Real-time Updates**: Automatic calendar updates with caching
+- **Modern UI**: Apple-style design with animated backgrounds
+- **Responsive**: Works on desktop, tablet, and mobile
+- **Open Source**: Free to use and modify
 
 ## Tech Stack
 
-- **Frontend**: Next.js 14, TypeScript, Tailwind CSS, Framer Motion
-- **Backend**: Flask, Python 3.13, Gunicorn
-- **Styling**: Apple-inspired design with glass morphism effects
-- **Deployment**: Docker & Docker Compose
+### Frontend
+- **Next.js 15** - React framework
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Utility-first CSS
+- **Framer Motion** - Animations
+- **Vercel** - Hosting
+
+### Backend
+- **Python 3.11** - Backend language
+- **Flask** - Web framework
+- **BeautifulSoup** - Web scraping
+- **ICS** - Calendar format
+- **Gunicorn** - Production server
+- **Koyeb** - Hosting
 
 ## Quick Start
 
-### Using Docker Compose (Recommended)
+### Option 1: Docker Compose (Development)
 
 ```bash
 # Clone the repository
 git clone https://github.com/andricje/calendar.git
 cd calendar
 
-# Start both frontend and backend
-docker-compose up -d
-
-# Access the application
-# Frontend: http://localhost:3000
-# Backend API: http://localhost:5001
+# Start with Docker Compose
+npm run dev
+# or
+docker-compose up
 ```
 
-### Manual Setup
+### Option 2: Manual Setup
 
-#### Backend
 ```bash
-# Install Python dependencies
+# Backend
+cd backend
 pip install -r requirements.txt
+python -m main
 
-# Run the Flask backend
-cd mmacalendar
-python main.py
-```
-
-#### Frontend
-```bash
-# Install Node.js dependencies
+# Frontend
 cd frontend
 npm install
-
-# Run the development server
 npm run dev
 ```
 
 ## API Endpoints
 
-- `GET /ufc` - UFC calendar (ICS format)
-- `GET /onefccalendar` - ONE FC calendar (ICS format)
-- `GET /` - Home page with calendar links
+- `GET /` - Health check
+- `GET /ufc` - UFC calendar
+- `GET /onefccalendar` - ONE Championship calendar
+- `GET /cache` - Cache status
+- `GET /cache/clear` - Clear cache
 
 ## Calendar Subscription Links
 
 ### UFC
-- Apple Calendar: `webcal://localhost:5001/ufc`
-- Google Calendar: `https://calendar.google.com/calendar/r?cid=http://localhost:5001/ufc`
+- **Apple Calendar**: `webcal://backend-url/ufc?name=UFC%20Events`
+- **Google Calendar**: `https://calendar.google.com/calendar/r?cid=backend-url/ufc&name=UFC%20Events`
+- **Download ICS**: `https://backend-url/ufc?name=UFC%20Events`
 
-### ONE FC
-- Apple Calendar: `webcal://localhost:5001/onefccalendar`
-- Google Calendar: `https://calendar.google.com/calendar/r?cid=http://localhost:5001/onefccalendar`
+### ONE Championship
+- **Apple Calendar**: `webcal://backend-url/onefccalendar?name=ONE%20Championship%20Events`
+- **Google Calendar**: `https://calendar.google.com/calendar/r?cid=backend-url/onefccalendar&name=ONE%20Championship%20Events`
+- **Download ICS**: `https://backend-url/onefccalendar?name=ONE%20Championship%20Events`
 
-## How it works
+## Production Deployment
 
-- Scrape events page for event details
-- Create and publish ics calendar
-- Update regularly
+### Backend (Koyeb)
 
-## What's the catch?
+1. **Deploy to Koyeb**:
+```bash
+# Install Koyeb CLI
+curl -fsSL https://cli.koyeb.com/install.sh | bash
 
-This sounded like a fun project that I wanted for my own use. Couldn't find a subscribable calendar so I made it myself. There's no strings attached, no trackers, no ads.
+# Login to Koyeb
+koyeb login
 
+# Deploy backend
+koyeb app init sports-calendar-backend \
+  --docker . \
+  --ports 8080:http \
+  --routes /:8080 \
+  --env URL=sports-calendar-backend-andricje.koyeb.app
+```
 
-## Author
+2. **Environment Variables**:
+- `URL`: Your Koyeb app URL
+- `PORT`: 8080 (default)
 
-**Marko Andrić** - Computer Science student at the University of Belgrade, passionate about software development, algorithms, and blockchain technology.
+### Frontend (Vercel)
 
-- GitHub: [@andricje](https://github.com/andricje)
+1. **Deploy to Vercel**:
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Login to Vercel
+vercel login
+
+# Deploy frontend
+cd frontend
+vercel --prod
+```
+
+2. **Environment Variables**:
+- `NEXT_PUBLIC_BACKEND_URL`: Your Koyeb backend URL (without trailing slash)
+
+### Example URLs
+
+- **Frontend**: https://sports-calendar-andricje.vercel.app
+- **Backend**: https://sports-calendar-backend-andricje.koyeb.app
+
+## Development
+
+### Adding New Sports/Leagues
+
+1. **Backend Scraper**:
+```python
+# backend/new_sport_calendar.py
+from backend.calendar_control import CalendarControl
+
+class NewSportCalendar(CalendarControl):
+    def update_calendar(self) -> Path:
+        # Implement scraping logic
+        pass
+```
+
+2. **Frontend Config**:
+```typescript
+// frontend/src/lib/sports-config.ts
+{
+  key: 'newsport',
+  name: 'New Sport',
+  icon: NewSportIcon,
+  leagues: [
+    {
+      id: 'newleague',
+      name: 'New League',
+      href: '/newleague',
+      backendEndpoint: '/newleague',
+    }
+  ]
+}
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Credits
+
+- **Original**: [@rsoper](https://github.com/rsoper)
+- **Extended**: [@andricje](https://github.com/andricje)
