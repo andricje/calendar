@@ -16,6 +16,7 @@ keywords = ["calendar", "sports", "ics", "mma", "ufc", "onefc"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -26,6 +27,7 @@ dependencies = [
     "beautifulsoup4>=4.12.0",
     "ics>=0.7.0",
     "pytz>=2023.3",
+    "gunicorn>=21.0.0",
 ]
 
 [project.optional-dependencies]
@@ -46,11 +48,11 @@ Issues = "https://github.com/andricje/calendar/issues"
 [project.scripts]
 sports-calendar = "backend.main:app"
 
-[tool.hatch.build.targets.wheel]
-packages = ["backend"]
-
 [tool.hatch.version]
 path = "backend/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
 
 [tool.black]
 line-length = 88

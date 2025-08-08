@@ -1,0 +1,18 @@
+{
+  "name": "sports-calendar",
+  "version": "1.0.0",
+  "description": "Sports Calendar - UFC and ONE FC calendar subscriptions",
+  "scripts": {
+    "dev": "docker-compose up --build",
+    "prod": "docker-compose -f docker-compose.prod.yml up --build -d",
+    "stop": "docker-compose -f docker-compose.prod.yml down",
+    "logs": "docker-compose -f docker-compose.prod.yml logs -f",
+    "build": "docker build -t sports-calendar-backend .",
+    "test": "cd backend && uv run pytest",
+    "format": "cd backend && uv run black . && uv run isort .",
+    "lint": "cd backend && uv run mypy . && uv run pylint backend/"
+  },
+  "keywords": ["calendar", "sports", "mma", "ufc", "onefc", "ics"],
+  "author": "Marko Andrić",
+  "license": "MIT"
+}

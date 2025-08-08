@@ -11,11 +11,14 @@ COPY backend/ ./backend/
 COPY tests/ ./tests/
 COPY pyproject.toml uv.lock README.md ./
 
-# Install dependencies (cache busting)
+# Install dependencies
 RUN pip install uv && uv sync --frozen
+
+# Install Gunicorn for production
+RUN pip install gunicorn
 
 # Expose port (Koyeb će setovati PORT env var)
 EXPOSE $PORT
 
-# Run the application
-CMD ["uv", "run", "python", "-m", "backend.main"]
+# Run with Gunicorn for production
+CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "--workers", "2", "--timeout", "120", "backend.wsgi:app"]

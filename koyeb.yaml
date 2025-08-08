@@ -7,15 +7,20 @@ service:
   env:
     - name: PORT
       value: "8080"
+    - name: URL
+      value: "sports-calendar-backend-andricje.koyeb.app"
   routes:
     - path: /
       protocol: http
   scale:
     min: 1
-    max: 1
+    max: 2
   healthcheck:
     path: /
     port: 8080
     interval: 30s
     timeout: 10s
     retries: 3
+  build:
+    builder: dockerfile
+    dockerfile_path: ./Dockerfile
