@@ -3,7 +3,7 @@ name = "mmacalendar"
 version = "0.1.1"
 description = "Scraping MMA events to calendars you can subscribe to!"
 authors = [
-    {name = "Richard"}
+    {name = "Marko Andrić", email = "marko.andric@example.com"}
 ]
 license = "MIT"
 
