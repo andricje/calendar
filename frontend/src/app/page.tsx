@@ -10,6 +10,7 @@ import { SportsSidebar } from '@/components/sports-sidebar'
 import { getActiveLeagues } from '@/lib/sports-config'
 
 export default function Home() {
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
   const activeLeagues = getActiveLeagues()
   
   const features = activeLeagues.map(league => ({
@@ -25,21 +26,21 @@ export default function Home() {
       title: `${league.name} Apple Calendar`,
       description: "Add to Apple Calendar",
       icon: Download,
-      link: `webcal://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}${league.backendEndpoint}`,
+      link: `webcal://${backendUrl.replace(/^https?:\/\//, '')}${league.backendEndpoint}?name=${encodeURIComponent(league.name + ' Events')}`,
       variant: "glass" as const
     },
     {
       title: `${league.name} Google Calendar`, 
       description: "Add to Google Calendar",
       icon: ExternalLink,
-      link: `https://calendar.google.com/calendar/r?cid=http://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}${league.backendEndpoint}`,
+      link: `https://calendar.google.com/calendar/r?cid=${backendUrl}${league.backendEndpoint}&name=${encodeURIComponent(league.name + ' Events')}`,
       variant: "glass" as const
     },
     {
       title: `${league.name} Download ICS`,
       description: `Download ${league.name} calendar file`,
       icon: FileDown,
-      link: `https://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}${league.backendEndpoint}`,
+      link: `${backendUrl}${league.backendEndpoint}?name=${encodeURIComponent(league.name + ' Events')}`,
       variant: "glass" as const
     }
   ])
@@ -98,12 +99,11 @@ export default function Home() {
                     </CardHeader>
                     <CardContent>
                       <Button 
-                        variant="gradient" 
-                        size="lg" 
                         className="w-full"
+                        variant="glass"
                         onClick={() => window.open(feature.link, '_self')}
                       >
-                        Subscribe Now
+                        Subscribe
                       </Button>
                     </CardContent>
                   </Card>
@@ -113,37 +113,32 @@ export default function Home() {
           </motion.div>
 
           {/* Quick Actions */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.0 }}
             className="mb-16"
           >
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-4">Quick Actions</h2>
-              <p className="text-gray-300">Add calendars directly to your preferred app or download files</p>
-              <Link href="/status" className="inline-flex items-center text-blue-400 hover:text-blue-300 mt-2 transition-colors">
-                <Activity className="w-4 h-4 mr-2" />
-                View System Status
-              </Link>
-            </div>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">Quick Actions</h2>
+            <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               {quickActions.map((action, index) => (
                 <motion.div
                   key={action.title}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 1.2 + index * 0.1 }}
                 >
-                  <Card className="hover:scale-105 transition-transform duration-300 cursor-pointer"
+                  <Card className="h-full hover:scale-105 transition-transform duration-300 cursor-pointer"
                         onClick={() => window.open(action.link, '_self')}>
-                    <CardContent className="p-4 text-center">
-                      <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center mx-auto mb-3">
-                        <action.icon className="w-5 h-5 text-white" />
+                    <CardContent className="p-6 text-center">
+                      <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center mx-auto mb-4">
+                        <action.icon className="w-6 h-6 text-white" />
                       </div>
-                      <h3 className="font-semibold text-white mb-1">{action.title}</h3>
-                      <p className="text-sm text-gray-300">{action.description}</p>
+                      <h3 className="text-lg font-semibold text-white mb-2">{action.title}</h3>
+                      <p className="text-sm text-gray-300 mb-4">{action.description}</p>
+                      <Button variant={action.variant} className="w-full">
+                        Subscribe
+                      </Button>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -152,12 +147,53 @@ export default function Home() {
           </motion.div>
 
           {/* Status Dashboard */}
-          <StatusDashboard />
-        </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.4 }}
+            className="mb-16"
+          >
+            <StatusDashboard />
+          </motion.div>
 
-        {/* Sidebar - fixed on the right */}
-        <div className="fixed top-20 right-16 transform hidden xl:block">
-          <SportsSidebar />
+          {/* Footer */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.6 }}
+            className="text-center text-gray-400"
+          >
+            <p className="mb-4">
+              Built with ❤️ by{' '}
+              <a 
+                href="https://github.com/andricje" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                @andricje
+              </a>
+              {' '}• Original by{' '}
+              <a 
+                href="https://github.com/rsoper" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                @rsoper
+              </a>
+            </p>
+            <p className="text-sm">
+              <a 
+                href="https://github.com/andricje/calendar" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 transition-colors"
+              >
+                View on GitHub
+              </a>
+            </p>
+          </motion.div>
         </div>
       </div>
     </div>

@@ -2,17 +2,62 @@
 import logging
 import sys
 from abc import ABCMeta, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytz
 from ics import Calendar, Event
+import os
+import json
 
 logging.basicConfig(
     stream=sys.stdout,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO,
 )
+
+
+class CalendarControl:
+    def __init__(self):
+        self.data_dir = Path("data")
+        self.data_dir.mkdir(exist_ok=True)
+        self.cache_file = self.data_dir / "cache_info.json"
+        
+    def get_cache_info(self):
+        """Get cache information for monitoring"""
+        if self.cache_file.exists():
+            try:
+                with open(self.cache_file, 'r') as f:
+                    return json.load(f)
+            except:
+                pass
+        return {"last_update": None, "status": "no_cache"}
+    
+    def update_cache_info(self, status="success", error=None):
+        """Update cache information"""
+        cache_info = {
+            "last_update": datetime.now().isoformat(),
+            "status": status,
+            "error": str(error) if error else None
+        }
+        with open(self.cache_file, 'w') as f:
+            json.dump(cache_info, f)
+    
+    def is_cache_fresh(self, max_age_hours=24):
+        """Check if cache is fresh enough"""
+        cache_info = self.get_cache_info()
+        if not cache_info.get("last_update"):
+            return False
+            
+        last_update = datetime.fromisoformat(cache_info["last_update"])
+        return datetime.now() - last_update < timedelta(hours=max_age_hours)
+    
+    def clear_cache(self):
+        """Clear all cached data"""
+        for file in self.data_dir.glob("*.ics"):
+            file.unlink()
+        if self.cache_file.exists():
+            self.cache_file.unlink()
 
 
 class CalendarControl(metaclass=ABCMeta):

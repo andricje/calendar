@@ -1,13 +1,15 @@
 """A simple Flask backend to route traffic"""
 
 import os
-
 from backend.onefc_calendar import OneFcCalendar
 from backend.ufc_calendar import UfcCalendar
-from flask import Flask, redirect, send_file, request
+from backend.calendar_control import CalendarControl
+from flask import Flask, redirect, send_file, request, jsonify
+from datetime import datetime
 
 one_fc_calendar = OneFcCalendar()
 ufc_calendar = UfcCalendar()
+calendar_control = CalendarControl()
 app: Flask = Flask(__name__)
 url = os.getenv("URL") if os.getenv("URL") else "mmacalendars.com"
 
@@ -56,6 +58,24 @@ def subscribe_to_calendar_google():
     )
 
 
+@app.route("/cache")
+def cache_status():
+    """Return cache status information"""
+    cache_info = calendar_control.get_cache_info()
+    return jsonify({
+        "cache_info": cache_info,
+        "is_fresh": calendar_control.is_cache_fresh(),
+        "timestamp": datetime.now().isoformat()
+    })
+
+
+@app.route("/cache/clear")
+def clear_cache():
+    """Clear all cached data"""
+    calendar_control.clear_cache()
+    return jsonify({"status": "cache_cleared"})
+
+
 @app.route("/")
 def home():
     """Return simple JSON response for API health check"""
@@ -64,7 +84,9 @@ def home():
         "message": "Sports Calendar Backend API",
         "endpoints": {
             "ufc": "/ufc",
-            "onefc": "/onefccalendar"
+            "onefc": "/onefccalendar",
+            "cache": "/cache",
+            "cache_clear": "/cache/clear"
         }
     }
 
