@@ -6,9 +6,25 @@ import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { SPORTS_CONFIG } from '@/lib/sports-config'
 
-export function SportsSidebar({ className }: { className?: string }) {
-  const [selected, setSelected] = useState<string>('mma')
+interface SportsSidebarProps {
+  className?: string
+  onSportChange?: (sportKey: string) => void
+  selectedSport?: string
+}
+
+export function SportsSidebar({ className, onSportChange, selectedSport: externalSelectedSport }: SportsSidebarProps) {
+  const [internalSelected, setInternalSelected] = useState<string>('mma')
+  
+  // Koristi external selected sport ako je prosleđen, inače internal
+  const selected = externalSelectedSport || internalSelected
   const current = SPORTS_CONFIG.find((s) => s.key === selected) ?? SPORTS_CONFIG[0]
+
+  const handleSportChange = (sportKey: string) => {
+    setInternalSelected(sportKey)
+    if (onSportChange) {
+      onSportChange(sportKey)
+    }
+  }
 
   return (
     <aside className={cn('space-y-6 w-80', className)}>
@@ -18,7 +34,7 @@ export function SportsSidebar({ className }: { className?: string }) {
           {SPORTS_CONFIG.map((sport) => (
             <button
               key={sport.key}
-              onClick={() => setSelected(sport.key)}
+              onClick={() => handleSportChange(sport.key)}
               className={cn(
                 'flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors',
                 selected === sport.key

@@ -7,11 +7,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { StatusDashboard } from '@/components/status-dashboard'
 import Link from 'next/link'
 import { SportsSidebar } from '@/components/sports-sidebar'
-import { getActiveLeagues } from '@/lib/sports-config'
+import { getActiveLeagues, SPORTS_CONFIG } from '@/lib/sports-config'
+import { useState } from 'react'
 
 export default function Home() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
-  const activeLeagues = getActiveLeagues()
+  const [selectedSport, setSelectedSport] = useState('mma')
+  
+  // Filtriram lige na osnovu izabranog sporta
+  const currentSport = SPORTS_CONFIG.find(sport => sport.key === selectedSport) || SPORTS_CONFIG[0]
+  const activeLeagues = currentSport.leagues.filter(league => !league.disabled)
   
   const features = activeLeagues.map(league => ({
     logo: league.logo,
@@ -21,30 +26,30 @@ export default function Home() {
     color: "from-blue-500 to-blue-600"
   }))
 
-  // Uklanjam duplikate - samo jedan set quick actions
-  const quickActions = [
+  // Quick actions za trenutni sport
+  const quickActions = activeLeagues.flatMap(league => [
     {
-      title: "Apple Calendar",
+      title: `${league.name} Apple Calendar`,
       description: "Add to Apple Calendar",
       icon: Download,
-      link: `webcal://${backendUrl.replace(/^https?:\/\//, '')}/ufc?name=${encodeURIComponent('UFC Events')}`,
-      variant: "gradient" as const
+      link: `webcal://${backendUrl.replace(/^https?:\/\//, '')}${league.backendEndpoint}?name=${encodeURIComponent(league.name + ' Events')}`,
+      variant: "glass" as const
     },
     {
-      title: "Google Calendar", 
+      title: `${league.name} Google Calendar`, 
       description: "Add to Google Calendar",
       icon: ExternalLink,
-      link: `https://calendar.google.com/calendar/r?cid=${backendUrl}/ufc&name=${encodeURIComponent('UFC Events')}`,
-      variant: "gradient" as const
+      link: `https://calendar.google.com/calendar/r?cid=${backendUrl}${league.backendEndpoint}&name=${encodeURIComponent(league.name + ' Events')}`,
+      variant: "glass" as const
     },
     {
-      title: "Download ICS",
-      description: "Download calendar file",
+      title: `${league.name} Download ICS`,
+      description: `Download ${league.name} calendar file`,
       icon: FileDown,
-      link: `${backendUrl}/ufc?name=${encodeURIComponent('UFC Events')}`,
-      variant: "gradient" as const
+      link: `${backendUrl}${league.backendEndpoint}?name=${encodeURIComponent(league.name + ' Events')}`,
+      variant: "glass" as const
     }
-  ]
+  ])
 
   return (
     <div className="min-h-screen">
@@ -86,7 +91,7 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.8 + index * 0.1 }}
                 >
-                  <Card className="h-full hover:scale-105 transition-transform duration-300">
+                  <Card className="h-full hover:bg-white/5 transition-all duration-300">
                     <CardHeader>
                       <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${feature.color} flex items-center justify-center mb-4`}>
                         {feature.logo ? (
@@ -100,10 +105,10 @@ export default function Home() {
                     </CardHeader>
                     <CardContent>
                       <Button 
-                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                        className="w-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-medium py-3 px-6 rounded-xl hover:bg-white/20 transition-all duration-300"
                         onClick={() => window.open(feature.link, '_self')}
                       >
-                        🚀 Subscribe Now
+                        Subscribe Now
                       </Button>
                     </CardContent>
                   </Card>
@@ -128,7 +133,7 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 1.2 + index * 0.1 }}
                 >
-                  <Card className="h-full hover:scale-105 transition-transform duration-300 cursor-pointer"
+                  <Card className="h-full hover:bg-white/5 transition-all duration-300 cursor-pointer"
                         onClick={() => window.open(action.link, '_self')}>
                     <CardContent className="p-6 text-center">
                       <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center mx-auto mb-4">
@@ -138,9 +143,9 @@ export default function Home() {
                       <p className="text-sm text-gray-300 mb-4">{action.description}</p>
                       <Button 
                         variant="gradient" 
-                        className="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                        className="w-full bg-white/10 backdrop-blur-sm border border-white/20 text-white font-medium py-3 px-6 rounded-xl hover:bg-white/20 transition-all duration-300"
                       >
-                        ⚡ Subscribe
+                        Subscribe
                       </Button>
                     </CardContent>
                   </Card>
@@ -166,26 +171,6 @@ export default function Home() {
             transition={{ duration: 0.8, delay: 1.6 }}
             className="text-center text-gray-400"
           >
-            <p className="mb-4">
-              Built with ❤️ by{' '}
-              <a 
-                href="https://github.com/andricje" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 transition-colors"
-              >
-                @andricje
-              </a>
-              {' '}• Original by{' '}
-              <a 
-                href="https://github.com/rsoper" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 transition-colors"
-              >
-                @rsoper
-              </a>
-            </p>
             <p className="text-sm">
               <a 
                 href="https://github.com/andricje/calendar" 
@@ -202,7 +187,7 @@ export default function Home() {
 
       {/* Sidebar - fixed on the right */}
       <div className="fixed top-20 right-8 transform hidden xl:block">
-        <SportsSidebar />
+        <SportsSidebar onSportChange={setSelectedSport} selectedSport={selectedSport} />
       </div>
     </div>
   )
