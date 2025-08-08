@@ -2,7 +2,7 @@ from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from .calendar_control import CalendarControl, Event
+from backend.calendar_control import CalendarControl, Event
 
 
 class UfcCalendar(CalendarControl):
@@ -39,13 +39,14 @@ class UfcCalendar(CalendarControl):
         Returns:
             list[str]: List of "Red Corner vs Blue Corner" for the given part.
         """
-        match part:
-            case "Main Card":
-                part_id = "main-card"
-            case "Prelims":
-                part_id = "prelims-card"
-            case "Early Prelims":
-                part_id = "early-prelims"
+        if part == "Main Card":
+            part_id = "main-card"
+        elif part == "Prelims":
+            part_id = "prelims-card"
+        elif part == "Early Prelims":
+            part_id = "early-prelims"
+        else:
+            part_id = "main-card"
         event_section = soup.select_one(f"#{part_id}")
         if not event_section:
             return []

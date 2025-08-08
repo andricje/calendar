@@ -14,5 +14,5 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 FROM python:3.13-alpine as runtime
 COPY --from=builder --chown=app:app /app /app
 ENV PATH="/app/.venv/bin:$PATH"
-WORKDIR /app/mmacalendar
+WORKDIR /app/backend
 CMD ["gunicorn", "--bind", ":5000", "--log-level", "debug", "--workers", "2", "wsgi:app"]

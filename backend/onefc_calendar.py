@@ -2,7 +2,7 @@ from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from .calendar_control import CalendarControl, Event
+from backend.calendar_control import CalendarControl, Event
 
 
 class OneFcCalendar(CalendarControl):

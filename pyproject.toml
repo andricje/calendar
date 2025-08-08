@@ -1,28 +1,80 @@
-[project]
-name = "mmacalendar"
-version = "0.1.1"
-description = "Scraping MMA events to calendars you can subscribe to!"
-authors = [
-    {name = "Marko Andrić", email = "marko.andric@example.com"}
-]
-license = "MIT"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-requests = "^2.27.1"
-beautifulsoup4 = "^4.10.0"
-pytz = "^2022.1"
-ics = "^0.7"
-Flask = "^2.1.1"
-gunicorn = "^20.1.0"
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[dependency-groups]
+[project]
+name = "calendar"
+dynamic = ["version"]
+description = "Backend for sports calendar ICS files"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+    {name = "Marko Andrić", email = "marko.andric@example.com"},
+]
+keywords = ["calendar", "sports", "ics", "mma", "ufc", "onefc"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "flask>=3.0.0",
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    "ics>=0.7.0",
+    "pytz>=2023.3",
+]
+
+[project.optional-dependencies]
 dev = [
-    "pytest>=8.3.5",
-    "pytest-cov>=6.0.0",
-    "pytest-watch>=4.2.0",
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.5.0",
+    "pylint>=2.17.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/andricje/calendar"
+Repository = "https://github.com/andricje/calendar"
+Issues = "https://github.com/andricje/calendar/issues"
+
+[project.scripts]
+sports-calendar = "backend.main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
+
+[tool.hatch.version]
+path = "backend/__init__.py"
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=backend",
+    "--cov-report=term-missing",
+    "--cov-report=html",
 ]

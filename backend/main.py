@@ -2,9 +2,9 @@
 
 import os
 
-from mmacalendar.onefc_calendar import OneFcCalendar
-from mmacalendar.ufc_calendar import UfcCalendar
-from flask import Flask, redirect, render_template, send_file, request
+from backend.onefc_calendar import OneFcCalendar
+from backend.ufc_calendar import UfcCalendar
+from flask import Flask, redirect, send_file, request
 
 one_fc_calendar = OneFcCalendar()
 ufc_calendar = UfcCalendar()
@@ -58,12 +58,15 @@ def subscribe_to_calendar_google():
 
 @app.route("/")
 def home():
-    """Return the home page jinja template"""
-    return render_template(
-        "home.html",
-        last_updated_onefc=one_fc_calendar.get_last_updated_string(),
-        last_updated_ufc=ufc_calendar.get_last_updated_string(),
-    )
+    """Return simple JSON response for API health check"""
+    return {
+        "status": "ok",
+        "message": "Sports Calendar Backend API",
+        "endpoints": {
+            "ufc": "/ufc",
+            "onefc": "/onefccalendar"
+        }
+    }
 
 
 if __name__ == "__main__":
