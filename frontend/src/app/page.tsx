@@ -21,29 +21,30 @@ export default function Home() {
     color: "from-blue-500 to-blue-600"
   }))
 
-  const quickActions = activeLeagues.flatMap(league => [
+  // Uklanjam duplikate - samo jedan set quick actions
+  const quickActions = [
     {
-      title: `${league.name} Apple Calendar`,
+      title: "Apple Calendar",
       description: "Add to Apple Calendar",
       icon: Download,
-      link: `webcal://${backendUrl.replace(/^https?:\/\//, '')}${league.backendEndpoint}?name=${encodeURIComponent(league.name + ' Events')}`,
-      variant: "glass" as const
+      link: `webcal://${backendUrl.replace(/^https?:\/\//, '')}/ufc?name=${encodeURIComponent('UFC Events')}`,
+      variant: "gradient" as const
     },
     {
-      title: `${league.name} Google Calendar`, 
+      title: "Google Calendar", 
       description: "Add to Google Calendar",
       icon: ExternalLink,
-      link: `https://calendar.google.com/calendar/r?cid=${backendUrl}${league.backendEndpoint}&name=${encodeURIComponent(league.name + ' Events')}`,
-      variant: "glass" as const
+      link: `https://calendar.google.com/calendar/r?cid=${backendUrl}/ufc&name=${encodeURIComponent('UFC Events')}`,
+      variant: "gradient" as const
     },
     {
-      title: `${league.name} Download ICS`,
-      description: `Download ${league.name} calendar file`,
+      title: "Download ICS",
+      description: "Download calendar file",
       icon: FileDown,
-      link: `${backendUrl}${league.backendEndpoint}?name=${encodeURIComponent(league.name + ' Events')}`,
-      variant: "glass" as const
+      link: `${backendUrl}/ufc?name=${encodeURIComponent('UFC Events')}`,
+      variant: "gradient" as const
     }
-  ])
+  ]
 
   return (
     <div className="min-h-screen">
@@ -99,11 +100,10 @@ export default function Home() {
                     </CardHeader>
                     <CardContent>
                       <Button 
-                        className="w-full"
-                        variant="glass"
+                        className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                         onClick={() => window.open(feature.link, '_self')}
                       >
-                        Subscribe
+                        🚀 Subscribe Now
                       </Button>
                     </CardContent>
                   </Card>
@@ -136,8 +136,11 @@ export default function Home() {
                       </div>
                       <h3 className="text-lg font-semibold text-white mb-2">{action.title}</h3>
                       <p className="text-sm text-gray-300 mb-4">{action.description}</p>
-                      <Button variant={action.variant} className="w-full">
-                        Subscribe
+                      <Button 
+                        variant="gradient" 
+                        className="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                      >
+                        ⚡ Subscribe
                       </Button>
                     </CardContent>
                   </Card>
@@ -195,6 +198,11 @@ export default function Home() {
             </p>
           </motion.div>
         </div>
+      </div>
+
+      {/* Sidebar - fixed on the right */}
+      <div className="fixed top-20 right-8 transform hidden xl:block">
+        <SportsSidebar />
       </div>
     </div>
   )
