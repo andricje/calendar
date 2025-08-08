@@ -17,7 +17,7 @@ logging.basicConfig(
 )
 
 
-class CalendarControl:
+class CacheManager:
     def __init__(self):
         self.data_dir = Path("data")
         self.data_dir.mkdir(exist_ok=True)

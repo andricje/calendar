@@ -3,13 +3,13 @@
 import os
 from backend.onefc_calendar import OneFcCalendar
 from backend.ufc_calendar import UfcCalendar
-from backend.calendar_control import CalendarControl
+from backend.calendar_control import CacheManager
 from flask import Flask, redirect, send_file, request, jsonify
 from datetime import datetime
 
 one_fc_calendar = OneFcCalendar()
 ufc_calendar = UfcCalendar()
-calendar_control = CalendarControl()
+cache_manager = CacheManager()
 app: Flask = Flask(__name__)
 url = os.getenv("URL") if os.getenv("URL") else "mmacalendars.com"
 
@@ -61,10 +61,10 @@ def subscribe_to_calendar_google():
 @app.route("/cache")
 def cache_status():
     """Return cache status information"""
-    cache_info = calendar_control.get_cache_info()
+    cache_info = cache_manager.get_cache_info()
     return jsonify({
         "cache_info": cache_info,
-        "is_fresh": calendar_control.is_cache_fresh(),
+        "is_fresh": cache_manager.is_cache_fresh(),
         "timestamp": datetime.now().isoformat()
     })
 
@@ -72,7 +72,7 @@ def cache_status():
 @app.route("/cache/clear")
 def clear_cache():
     """Clear all cached data"""
-    calendar_control.clear_cache()
+    cache_manager.clear_cache()
     return jsonify({"status": "cache_cleared"})
 
 
