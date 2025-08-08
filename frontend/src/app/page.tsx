@@ -1,9 +1,11 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Calendar, Clock, Users, Zap, ExternalLink, Download, FileDown } from 'lucide-react'
+import { Calendar, Users, Zap, ExternalLink, Download, FileDown, Activity } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { StatusDashboard } from '@/components/status-dashboard'
+import Link from 'next/link'
 
 export default function Home() {
   const features = [
@@ -155,6 +157,10 @@ export default function Home() {
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-4">Quick Actions</h2>
             <p className="text-gray-300">Add calendars directly to your preferred app or download files</p>
+            <Link href="/status" className="inline-flex items-center text-blue-400 hover:text-blue-300 mt-2 transition-colors">
+              <Activity className="w-4 h-4 mr-2" />
+              View System Status
+            </Link>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
@@ -179,6 +185,9 @@ export default function Home() {
             ))}
           </div>
         </motion.div>
+
+        {/* Status Dashboard */}
+        <StatusDashboard />
 
         {/* Footer */}
         <motion.div 
