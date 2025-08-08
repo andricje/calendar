@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { ONEFCLogo } from '@/components/ui/onefc-logo'
 
 export default function ONEFCPage() {
-  const backendUrl = (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000').replace(/\/$/, '')
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
   
   const quickActions = [
     {
