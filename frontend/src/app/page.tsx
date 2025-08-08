@@ -25,21 +25,21 @@ export default function Home() {
       title: `${league.name} Apple Calendar`,
       description: "Add to Apple Calendar",
       icon: Download,
-      link: `webcal://localhost:5001${league.backendEndpoint}`,
+      link: `webcal://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}${league.backendEndpoint}`,
       variant: "glass" as const
     },
     {
       title: `${league.name} Google Calendar`, 
       description: "Add to Google Calendar",
       icon: ExternalLink,
-      link: `https://calendar.google.com/calendar/r?cid=http://localhost:5001${league.backendEndpoint}`,
+      link: `https://calendar.google.com/calendar/r?cid=http://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}${league.backendEndpoint}`,
       variant: "glass" as const
     },
     {
       title: `${league.name} Download ICS`,
       description: `Download ${league.name} calendar file`,
       icon: FileDown,
-      link: `http://localhost:5001${league.backendEndpoint}`,
+      link: `https://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}${league.backendEndpoint}`,
       variant: "glass" as const
     }
   ])

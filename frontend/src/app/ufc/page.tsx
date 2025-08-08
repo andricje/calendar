@@ -13,21 +13,21 @@ export default function UFCPage() {
       title: "UFC Apple Calendar",
       description: "Add to Apple Calendar",
       icon: Download,
-      link: "webcal://localhost:5001/ufc",
+      link: `webcal://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/ufc`,
       variant: "glass" as const
     },
     {
       title: "UFC Google Calendar", 
       description: "Add to Google Calendar",
       icon: ExternalLink,
-      link: "https://calendar.google.com/calendar/r?cid=http://localhost:5001/ufc",
+      link: `https://calendar.google.com/calendar/r?cid=https://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/ufc`,
       variant: "glass" as const
     },
     {
       title: "UFC Download ICS",
       description: "Download UFC calendar file",
       icon: FileDown,
-      link: "http://localhost:5001/ufc",
+      link: `https://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/ufc`,
       variant: "glass" as const
     }
   ]

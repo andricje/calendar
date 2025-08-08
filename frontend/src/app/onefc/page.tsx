@@ -13,21 +13,21 @@ export default function ONEFCPage() {
       title: "ONE FC Apple Calendar",
       description: "Add to Apple Calendar",
       icon: Download,
-      link: "webcal://localhost:5001/onefccalendar",
+      link: `webcal://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/onefccalendar`,
       variant: "glass" as const
     },
     {
       title: "ONE FC Google Calendar", 
       description: "Add to Google Calendar",
       icon: ExternalLink,
-      link: "https://calendar.google.com/calendar/r?cid=http://localhost:5001/onefccalendar",
+      link: `https://calendar.google.com/calendar/r?cid=https://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/onefccalendar`,
       variant: "glass" as const
     },
     {
       title: "ONE FC Download ICS",
       description: "Download ONE FC calendar file",
       icon: FileDown,
-      link: "http://localhost:5001/onefccalendar",
+      link: `https://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/onefccalendar`,
       variant: "glass" as const
     }
   ]
