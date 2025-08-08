@@ -1,6 +1,8 @@
 import { Dumbbell, Trophy, Gamepad2, Car, Globe2, Target } from 'lucide-react'
 import { UFCLogo } from '@/components/ui/ufc-logo'
 import { ONEFCLogo } from '@/components/ui/onefc-logo'
+import { FNCLogo } from '@/components/ui/fnc-logo'
+import { KSFLogo } from '@/components/ui/ksf-logo'
 
 export interface League {
   id: string
@@ -45,6 +47,22 @@ export const SPORTS_CONFIG: Sport[] = [
         backendEndpoint: '/onefccalendar',
         description: 'ONE Championship events',
         logo: ONEFCLogo
+      },
+      { 
+        id: 'fnc',
+        name: 'FNC', 
+        href: '/fnc',
+        disabled: true,
+        description: 'Fight Night Championship',
+        logo: FNCLogo
+      },
+      { 
+        id: 'ksw',
+        name: 'KSW', 
+        href: '/ksw',
+        disabled: true,
+        description: 'Kickboxing Super Fight',
+        logo: KSFLogo
       },
       { 
         id: 'pfl',

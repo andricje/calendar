@@ -27,49 +27,61 @@ export function SportsSidebar({ className, onSportChange, selectedSport: externa
   }
 
   return (
-    <aside className={cn('space-y-6 w-80 pointer-events-auto', className)}>
-      <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 pointer-events-auto">
-        <h3 className="text-lg font-semibold text-white/90 mb-4">Sports</h3>
-        <div className="grid grid-cols-2 gap-3">
+    <aside className={cn('space-y-4 lg:space-y-6 w-full lg:w-80 pointer-events-auto', className)}>
+      <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 lg:p-6 pointer-events-auto">
+        <h3 className="text-base lg:text-lg font-semibold text-white/90 mb-3 lg:mb-4">Sports</h3>
+        <div className="grid grid-cols-2 gap-2 lg:gap-3">
           {SPORTS_CONFIG.map((sport) => (
             <button
               key={sport.key}
               onClick={() => handleSportChange(sport.key)}
               className={cn(
-                'flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors cursor-pointer pointer-events-auto',
+                'flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2 lg:py-3 rounded-xl text-xs lg:text-sm transition-colors cursor-pointer pointer-events-auto',
                 selected === sport.key
                   ? 'bg-white/20 text-white'
                   : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'
               )}
             >
-              <sport.icon className="w-5 h-5" />
+              <sport.icon className="w-4 h-4 lg:w-5 lg:h-5" />
               <span>{sport.name}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 pointer-events-auto">
-        <h3 className="text-lg font-semibold text-white/90 mb-4">Leagues</h3>
-        <div className="flex flex-col gap-3">
+      <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 lg:p-6 pointer-events-auto">
+        <h3 className="text-base lg:text-lg font-semibold text-white/90 mb-3 lg:mb-4">Leagues</h3>
+        <div className="flex flex-col gap-2 lg:gap-3">
           {current.leagues.map((league) =>
             league.href && !league.disabled ? (
               <Link
                 key={league.id}
                 href={league.href}
-                className="px-4 py-3 rounded-xl text-sm bg-white/10 hover:bg-white/20 text-white transition-colors pointer-events-auto"
+                className="px-3 lg:px-4 py-2 lg:py-3 rounded-xl text-xs lg:text-sm bg-white/10 hover:bg-white/20 text-white transition-colors pointer-events-auto flex items-center gap-2"
                 title={league.description}
               >
+                {league.logo ? (
+                  <league.logo size="sm" />
+                ) : (
+                  <span className="w-4 h-4 lg:w-5 lg:h-5">🏆</span>
+                )}
                 {league.name}
               </Link>
             ) : (
               <div
                 key={league.id}
-                className="px-4 py-3 rounded-xl text-sm bg-white/5 text-white/50 cursor-not-allowed flex items-center justify-between pointer-events-auto"
+                className="px-3 lg:px-4 py-2 lg:py-3 rounded-xl text-xs lg:text-sm bg-white/5 text-white/50 cursor-not-allowed flex items-center justify-between pointer-events-auto"
                 title={league.description || 'Coming soon'}
               >
-                {league.name}
-                <span className="text-[10px] uppercase tracking-wide">soon</span>
+                <div className="flex items-center gap-2">
+                  {league.logo ? (
+                    <league.logo size="sm" />
+                  ) : (
+                    <span className="w-4 h-4 lg:w-5 lg:h-5">🏆</span>
+                  )}
+                  {league.name}
+                </div>
+                <span className="text-[8px] lg:text-[10px] uppercase tracking-wide">soon</span>
               </div>
             )
           )}

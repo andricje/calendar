@@ -59,6 +59,9 @@ export default function ONEFCPage() {
 
   return (
     <div className="min-h-screen">
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-blue-800/10 to-transparent"></div>
+      
       <div className="relative z-10 px-4 pt-16 pb-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -72,10 +75,12 @@ export default function ONEFCPage() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8 }}
-              className="flex items-center justify-center mb-6"
+              className="flex flex-col items-center justify-center mb-8"
             >
-              <ONEFCLogo size="lg" className="mr-4" />
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              <div className="mb-6">
+                <ONEFCLogo size="lg" />
+              </div>
+              <h1 className="text-5xl font-bold text-white">
                 ONE Championship Calendar
               </h1>
             </motion.div>
@@ -87,7 +92,7 @@ export default function ONEFCPage() {
               className="text-xl text-gray-300 max-w-2xl mx-auto"
             >
               Subscribe to ONE Championship events calendar and never miss a fight again. 
-              Get all ONE Championship events directly in your calendar with automatic updates.
+              Get all ONE events directly in your calendar with automatic updates.
             </motion.p>
           </div>
 

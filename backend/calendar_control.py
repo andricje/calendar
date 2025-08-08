@@ -22,6 +22,7 @@ class CacheManager:
         self.data_dir = Path("data")
         self.data_dir.mkdir(exist_ok=True)
         self.cache_file = self.data_dir / "cache_info.json"
+        self.stats_file = self.data_dir / "scraping_stats.json"
         
     def get_cache_info(self):
         """Get cache information for monitoring"""
@@ -42,6 +43,78 @@ class CacheManager:
         }
         with open(self.cache_file, 'w') as f:
             json.dump(cache_info, f)
+        
+        # Update scraping statistics
+        self.update_scraping_stats(status == "success")
+    
+    def update_scraping_stats(self, success: bool):
+        """Update 30-day scraping statistics"""
+        stats = self.get_scraping_stats()
+        
+        today = datetime.now().strftime("%Y-%m-%d")
+        
+        # Add today's result
+        if today not in stats["daily_results"]:
+            stats["daily_results"][today] = {"success": 0, "failed": 0}
+        
+        if success:
+            stats["daily_results"][today]["success"] += 1
+        else:
+            stats["daily_results"][today]["failed"] += 1
+        
+        # Remove entries older than 30 days
+        thirty_days_ago = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+        stats["daily_results"] = {
+            date: data for date, data in stats["daily_results"].items() 
+            if date >= thirty_days_ago
+        }
+        
+        # Calculate 30-day success rate
+        total_attempts = sum(data["success"] + data["failed"] for data in stats["daily_results"].values())
+        total_success = sum(data["success"] for data in stats["daily_results"].values())
+        
+        stats["success_rate_30d"] = (total_success / total_attempts * 100) if total_attempts > 0 else 0
+        stats["total_attempts_30d"] = total_attempts
+        stats["total_success_30d"] = total_success
+        
+        # Generate daily success array for frontend
+        stats["daily_success_array"] = []
+        for i in range(30):
+            date = (datetime.now() - timedelta(days=29-i)).strftime("%Y-%m-%d")
+            if date in stats["daily_results"]:
+                day_data = stats["daily_results"][date]
+                # Consider day successful if more successes than failures
+                success = day_data["success"] > day_data["failed"]
+            else:
+                success = False  # No data for this day
+            stats["daily_success_array"].append({
+                "date": date,
+                "success": success
+            })
+        
+        with open(self.stats_file, 'w') as f:
+            json.dump(stats, f)
+    
+    def get_scraping_stats(self):
+        """Get 30-day scraping statistics"""
+        if self.stats_file.exists():
+            try:
+                with open(self.stats_file, 'r') as f:
+                    stats = json.load(f)
+                    # Ensure daily_success_array exists
+                    if "daily_success_array" not in stats:
+                        stats["daily_success_array"] = []
+                    return stats
+            except:
+                pass
+        
+        return {
+            "daily_results": {},
+            "success_rate_30d": 0,
+            "total_attempts_30d": 0,
+            "total_success_30d": 0,
+            "daily_success_array": []
+        }
     
     def is_cache_fresh(self, max_age_hours=24):
         """Check if cache is fresh enough"""
@@ -58,6 +131,8 @@ class CacheManager:
             file.unlink()
         if self.cache_file.exists():
             self.cache_file.unlink()
+        if self.stats_file.exists():
+            self.stats_file.unlink()
 
 
 class CalendarControl(metaclass=ABCMeta):

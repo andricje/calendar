@@ -76,6 +76,16 @@ def clear_cache():
     return jsonify({"status": "cache_cleared"})
 
 
+@app.route("/stats")
+def scraping_stats():
+    """Return 30-day scraping statistics"""
+    stats = cache_manager.get_scraping_stats()
+    return jsonify({
+        "stats": stats,
+        "timestamp": datetime.now().isoformat()
+    })
+
+
 @app.route("/")
 def home():
     """Return simple JSON response for API health check"""
@@ -86,7 +96,8 @@ def home():
             "ufc": "/ufc",
             "onefc": "/onefccalendar",
             "cache": "/cache",
-            "cache_clear": "/cache/clear"
+            "cache_clear": "/cache/clear",
+            "stats": "/stats"
         }
     }
 

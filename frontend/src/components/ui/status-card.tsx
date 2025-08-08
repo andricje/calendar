@@ -8,10 +8,12 @@ interface StatusCardProps {
   status: 'online' | 'offline' | 'loading'
   lastUpdated?: string
   url?: string
+  description?: string
+  icon?: string
   className?: string
 }
 
-export function StatusCard({ title, status, lastUpdated, url, className }: StatusCardProps) {
+export function StatusCard({ title, status, lastUpdated, url, description, icon, className }: StatusCardProps) {
   const getStatusColor = () => {
     switch (status) {
       case 'online':
@@ -54,6 +56,12 @@ export function StatusCard({ title, status, lastUpdated, url, className }: Statu
           <div className="flex items-center space-x-2 text-sm text-gray-300">
             <Clock className="w-4 h-4" />
             <span>Last updated: {lastUpdated}</span>
+          </div>
+        )}
+        {description && (
+          <div className="flex items-center space-x-2 text-sm text-gray-300 mt-2">
+            {icon && <span className="text-lg">{icon}</span>}
+            <span>{description}</span>
           </div>
         )}
         {url && (
