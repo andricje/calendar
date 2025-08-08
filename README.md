@@ -84,9 +84,6 @@ npm run dev
 
 This sounded like a fun project that I wanted for my own use. Couldn't find a subscribable calendar so I made it myself. There's no strings attached, no trackers, no ads.
 
-## Support the project
-
-<a href="https://www.buymeacoffee.com/andricje" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" height="60px"></a>
 
 ## Author
 
