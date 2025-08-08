@@ -8,26 +8,28 @@ import Link from 'next/link'
 import { ONEFCLogo } from '@/components/ui/onefc-logo'
 
 export default function ONEFCPage() {
+  const backendUrl = (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000').replace(/\/$/, '')
+  
   const quickActions = [
     {
       title: "ONE FC Apple Calendar",
       description: "Add to Apple Calendar",
       icon: Download,
-      link: `webcal://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/onefccalendar`,
+      link: `webcal://${backendUrl.replace(/^https?:\/\//, '')}/onefccalendar?name=ONE%20Championship%20Events`,
       variant: "glass" as const
     },
     {
       title: "ONE FC Google Calendar", 
       description: "Add to Google Calendar",
       icon: ExternalLink,
-      link: `https://calendar.google.com/calendar/r?cid=https://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/onefccalendar`,
+      link: `https://calendar.google.com/calendar/r?cid=${backendUrl}/onefccalendar&name=ONE%20Championship%20Events`,
       variant: "glass" as const
     },
     {
       title: "ONE FC Download ICS",
       description: "Download ONE FC calendar file",
       icon: FileDown,
-      link: `https://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/onefccalendar`,
+      link: `${backendUrl}/onefccalendar?name=ONE%20Championship%20Events`,
       variant: "glass" as const
     }
   ]

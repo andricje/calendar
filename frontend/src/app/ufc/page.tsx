@@ -8,26 +8,28 @@ import Link from 'next/link'
 import { UFCLogo } from '@/components/ui/ufc-logo'
 
 export default function UFCPage() {
+  const backendUrl = (process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000').replace(/\/$/, '')
+  
   const quickActions = [
     {
       title: "UFC Apple Calendar",
       description: "Add to Apple Calendar",
       icon: Download,
-      link: `webcal://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/ufc`,
+      link: `webcal://${backendUrl.replace(/^https?:\/\//, '')}/ufc?name=UFC%20Events`,
       variant: "glass" as const
     },
     {
       title: "UFC Google Calendar", 
       description: "Add to Google Calendar",
       icon: ExternalLink,
-      link: `https://calendar.google.com/calendar/r?cid=https://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/ufc`,
+      link: `https://calendar.google.com/calendar/r?cid=${backendUrl}/ufc&name=UFC%20Events`,
       variant: "glass" as const
     },
     {
       title: "UFC Download ICS",
       description: "Download UFC calendar file",
       icon: FileDown,
-      link: `https://${process.env.NEXT_PUBLIC_BACKEND_URL || 'localhost:5001'}/ufc`,
+      link: `${backendUrl}/ufc?name=UFC%20Events`,
       variant: "glass" as const
     }
   ]

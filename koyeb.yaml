@@ -5,8 +5,6 @@ service:
     - port: 8080
       protocol: http
   env:
-    - name: PORT
-      value: "8080"
     - name: URL
       value: "sports-calendar-backend-andricje.koyeb.app"
   routes:
