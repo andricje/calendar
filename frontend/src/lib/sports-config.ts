@@ -1,4 +1,4 @@
-import { Dumbbell, Trophy, Gamepad2, Car, Globe2, Target, Shield, Zap } from 'lucide-react'
+import { Dumbbell, Trophy, Gamepad2, Car, Globe2, Target } from 'lucide-react'
 import { UFCLogo } from '@/components/ui/ufc-logo'
 import { ONEFCLogo } from '@/components/ui/onefc-logo'
 
@@ -10,13 +10,13 @@ export interface League {
   description?: string
   backendEndpoint?: string
   icon?: string
-  logo?: any
+  logo?: React.ComponentType<{ className?: string; size?: 'sm' | 'md' | 'lg' }>
 }
 
 export interface Sport {
   key: string
   name: string
-  icon: any
+  icon: React.ComponentType<{ className?: string }>
   color: string
   leagues: League[]
   description: string

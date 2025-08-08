@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { ExternalLink, Download, FileDown, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
 import { ONEFCLogo } from '@/components/ui/onefc-logo'
 

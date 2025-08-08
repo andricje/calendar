@@ -4,7 +4,7 @@ import * as React from 'react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { SPORTS_CONFIG, type Sport } from '@/lib/sports-config'
+import { SPORTS_CONFIG } from '@/lib/sports-config'
 
 export function SportsSidebar({ className }: { className?: string }) {
   const [selected, setSelected] = useState<string>('mma')
