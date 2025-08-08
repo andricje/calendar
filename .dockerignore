@@ -1,5 +1,4 @@
 .vscode
-tests
 .gitignore
 .gitlab-ci.yml
 Dockerfile

@@ -1,18 +1,16 @@
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim as builder
-ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy
-ENV UV_PYTHON_DOWNLOADS=0
-WORKDIR /app
-RUN --mount=type=cache,target=/root/.cache/uv \
-    --mount=type=bind,source=uv.lock,target=uv.lock \
-    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev
-ADD . /app
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev
+FROM python:3.11-slim
 
-# Slim Runtime layer
-FROM python:3.13-alpine as runtime
-COPY --from=builder --chown=app:app /app /app
-ENV PATH="/app/.venv/bin:$PATH"
-WORKDIR /app/backend
-CMD ["gunicorn", "--bind", ":5000", "--log-level", "debug", "--workers", "2", "wsgi:app"]
+WORKDIR /app
+
+# Copy source code first
+COPY backend/ ./backend/
+COPY tests/ ./tests/
+COPY pyproject.toml uv.lock README.md ./
+
+# Install dependencies
+RUN pip install uv && uv sync --frozen
+
+EXPOSE 5000
+
+# Run the application
+CMD ["uv", "run", "python", "-m", "backend.main"]
