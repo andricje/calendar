@@ -204,11 +204,11 @@ export function StatusDashboard() {
                   {statusData.ufc.dailyStats.filter(d => d.success).length}/30 days
                 </span>
               </div>
-              <div className="flex space-x-1">
+              <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(30, minmax(0, 1fr))' }}>
                 {statusData.ufc.dailyStats.map((day, index) => (
                   <div
                     key={index}
-                    className={`w-2 h-8 rounded-sm transition-all duration-200 hover:scale-125 cursor-pointer ${
+                    className={`h-8 rounded-sm transition-all duration-200 hover:scale-110 cursor-pointer ${
                       day.success ? 'bg-green-400' : 'bg-red-400'
                     }`}
                     title={`${day.date}: ${day.success ? 'Success' : 'Failed'}`}
@@ -225,11 +225,11 @@ export function StatusDashboard() {
                   {statusData.onefc.dailyStats.filter(d => d.success).length}/30 days
                 </span>
               </div>
-              <div className="flex space-x-1">
+              <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(30, minmax(0, 1fr))' }}>
                 {statusData.onefc.dailyStats.map((day, index) => (
                   <div
                     key={index}
-                    className={`w-2 h-8 rounded-sm transition-all duration-200 hover:scale-125 cursor-pointer ${
+                    className={`h-8 rounded-sm transition-all duration-200 hover:scale-110 cursor-pointer ${
                       day.success ? 'bg-green-400' : 'bg-red-400'
                     }`}
                     title={`${day.date}: ${day.success ? 'Success' : 'Failed'}`}
@@ -246,11 +246,11 @@ export function StatusDashboard() {
                   {statusData.backend.dailyStats.filter(d => d.success).length}/30 days
                 </span>
               </div>
-              <div className="flex space-x-1">
+              <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(30, minmax(0, 1fr))' }}>
                 {statusData.backend.dailyStats.map((day, index) => (
                   <div
                     key={index}
-                    className={`w-2 h-8 rounded-sm transition-all duration-200 hover:scale-125 cursor-pointer ${
+                    className={`h-8 rounded-sm transition-all duration-200 hover:scale-110 cursor-pointer ${
                       day.success ? 'bg-green-400' : 'bg-red-400'
                     }`}
                     title={`${day.date}: ${day.success ? 'Success' : 'Failed'}`}
