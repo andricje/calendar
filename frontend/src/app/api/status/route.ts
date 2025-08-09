@@ -1,53 +1,25 @@
 import { NextResponse } from 'next/server'
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5001'
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080'
 
+// Server-side proxy to avoid CORS in the browser
 export async function GET() {
   try {
-    // Fetch status from backend
-    const response = await fetch(`${BACKEND_URL}/`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const response = await fetch(`${BACKEND_URL}/stats`, {
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
     })
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
 
-    const htmlContent = await response.text()
-    
-    // Parse the HTML to extract last updated times
-    const ufcMatch = htmlContent.match(/Last updated: (.*?) PST/i)
-    const onefcMatch = htmlContent.match(/Last updated: (.*?) PST/i)
-    
-    const status = {
-      ufc: {
-        lastUpdated: ufcMatch ? ufcMatch[1] : 'Unknown',
-        status: 'online',
-        url: `${BACKEND_URL}/ufc`
-      },
-      onefc: {
-        lastUpdated: onefcMatch ? onefcMatch[1] : 'Unknown', 
-        status: 'online',
-        url: `${BACKEND_URL}/onefccalendar`
-      },
-      backend: {
-        status: 'online',
-        url: BACKEND_URL
-      }
-    }
-
-    return NextResponse.json(status)
+    const statsPayload = await response.json()
+    return NextResponse.json(statsPayload, { status: 200 })
   } catch (error) {
-    console.error('Error fetching status:', error)
+    console.error('Error proxying backend /stats:', error)
     return NextResponse.json(
-      { 
-        error: 'Failed to fetch status',
-        ufc: { status: 'offline', lastUpdated: 'Unknown' },
-        onefc: { status: 'offline', lastUpdated: 'Unknown' },
-        backend: { status: 'offline' }
-      },
+      { error: 'Failed to fetch backend stats' },
       { status: 500 }
     )
   }

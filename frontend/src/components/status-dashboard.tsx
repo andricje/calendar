@@ -54,42 +54,36 @@ export function StatusDashboard() {
       setLoading(true)
       setError(null)
       
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080'
-      
-      // Fetch stats from backend
-      const statsResponse = await fetch(`${backendUrl}/stats`)
+      // Fetch stats via Next.js API proxy to avoid CORS
+      const statsResponse = await fetch(`/api/status`, { cache: 'no-store' })
       if (!statsResponse.ok) {
         throw new Error('Failed to fetch stats')
       }
       
       const statsData = await statsResponse.json()
-      const dailyStats = statsData.stats.daily_success_array || []
-      
-      // Fetch cache info
-      const cacheResponse = await fetch(`${backendUrl}/cache`)
-      const cacheData = cacheResponse.ok ? await cacheResponse.json() : null
-      
+      const services = statsData.stats?.services || {}
+
+      const ufcSvc = services.ufc || {}
+      const oneSvc = services.onefc || {}
+      const backendSvc = services.backend || {}
+
       setStatusData({
         ufc: {
-          lastUpdated: cacheData?.cache_info?.last_update ? 
-            new Date(cacheData.cache_info.last_update).toLocaleString() : 
-            new Date().toLocaleString(),
-          status: cacheData?.cache_info?.status === 'success' ? 'online' : 'offline',
-          events: Math.floor(Math.random() * 5) + 10, // Simulated for now
-          dailyStats: dailyStats
+          lastUpdated: ufcSvc.last_update ? new Date(ufcSvc.last_update).toLocaleString() : 'Unknown',
+          status: (ufcSvc.daily_success_array?.slice(-1)[0]?.success ? 'online' : 'offline') as 'online' | 'offline',
+          events: ufcSvc.last_events_count || 0,
+          dailyStats: (ufcSvc.daily_success_array || []) as Array<{ date: string; success: boolean }>
         },
         onefc: {
-          lastUpdated: cacheData?.cache_info?.last_update ? 
-            new Date(cacheData.cache_info.last_update).toLocaleString() : 
-            new Date().toLocaleString(),
-          status: cacheData?.cache_info?.status === 'success' ? 'online' : 'offline',
-          events: Math.floor(Math.random() * 3) + 8, // Simulated for now
-          dailyStats: dailyStats
+          lastUpdated: oneSvc.last_update ? new Date(oneSvc.last_update).toLocaleString() : 'Unknown',
+          status: (oneSvc.daily_success_array?.slice(-1)[0]?.success ? 'online' : 'offline') as 'online' | 'offline',
+          events: oneSvc.last_events_count || 0,
+          dailyStats: (oneSvc.daily_success_array || []) as Array<{ date: string; success: boolean }>
         },
         backend: {
-          status: 'online',
-          uptime: '24h 32m', // Simulated for now
-          dailyStats: dailyStats
+          status: (backendSvc.daily_success_array?.slice(-1)[0]?.success ? 'online' : 'offline') as 'online' | 'offline',
+          uptime: backendSvc.last_update ? new Date(backendSvc.last_update).toLocaleString() : '',
+          dailyStats: (backendSvc.daily_success_array || []) as Array<{ date: string; success: boolean }>
         }
       })
     } catch (err) {
