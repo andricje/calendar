@@ -9,34 +9,27 @@ import { ONEFCLogo } from '@/components/ui/onefc-logo'
 
 export default function ONEFCPage() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
-  const googleCid = encodeURIComponent(`${backendUrl}/onefccalendar`)
-  let backendHost: string
-  try {
-    backendHost = new URL(backendUrl).host
-  } catch {
-    backendHost = backendUrl
-  }
   
   const quickActions = [
     {
-      title: "Apple Calendar (iCal)",
-      description: "Subscribe via iCalendar with automatic updates",
+      title: "ONE FC Apple Calendar",
+      description: "Add to Apple Calendar",
       icon: Download,
-      link: `webcal://${backendHost}/onefccalendar`,
+      link: `webcal://${backendUrl.replace(/^https?:\/\//, '')}/onefccalendar?name=ONE%20Championship%20Events`,
       variant: "glass" as const
     },
     {
-      title: "Google Calendar", 
-      description: "Subscribe in Google Calendar",
+      title: "ONE FC Google Calendar", 
+      description: "Add to Google Calendar",
       icon: ExternalLink,
-      link: `https://calendar.google.com/calendar/r?cid=${googleCid}`,
+      link: `https://calendar.google.com/calendar/r?cid=${backendUrl}/onefccalendar&name=ONE%20Championship%20Events`,
       variant: "glass" as const
     },
     {
-      title: "Download (.ics)",
-      description: "One-time download of the ONE Championship calendar file",
+      title: "ONE FC Download ICS",
+      description: "Download ONE FC calendar file",
       icon: FileDown,
-      link: `${backendUrl}/onefccalendar`,
+      link: `${backendUrl}/onefccalendar?name=ONE%20Championship%20Events`,
       variant: "glass" as const
     }
   ]
@@ -111,7 +104,7 @@ export default function ONEFCPage() {
             className="mb-16"
           >
             <h2 className="text-3xl font-bold text-white mb-8 text-center">Subscribe to ONE Championship Calendar</h2>
-            <div className="grid md:grid-cols-3 gap-6 items-stretch">
+            <div className="grid md:grid-cols-3 gap-6">
               {quickActions.map((action, index) => (
                 <motion.div
                   key={action.title}
@@ -121,14 +114,14 @@ export default function ONEFCPage() {
                 >
                   <Card className="h-full hover:scale-105 transition-transform duration-300 cursor-pointer"
                         onClick={() => window.open(action.link, '_self')}>
-                    <CardContent className="p-6 text-center flex flex-col h-full">
+                    <CardContent className="p-6 text-center">
                       <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center mx-auto mb-4">
                         <action.icon className="w-6 h-6 text-white" />
                       </div>
                       <h3 className="text-lg font-semibold text-white mb-2">{action.title}</h3>
                       <p className="text-sm text-gray-300 mb-4">{action.description}</p>
-                      <Button variant={action.variant} className="w-full mt-auto">
-                        {action.title.includes('Google') ? 'Add to Google Calendar' : action.title.includes('Apple') ? 'Add to Apple Calendar' : 'Download .ics'}
+                      <Button variant={action.variant} className="w-full">
+                        Subscribe
                       </Button>
                     </CardContent>
                   </Card>
