@@ -4,6 +4,7 @@ import sys
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta
 from pathlib import Path
+from typing import Dict, Any
 
 import pytz
 from ics import Calendar, Event
@@ -23,6 +24,58 @@ class CacheManager:
         self.data_dir.mkdir(exist_ok=True)
         self.cache_file = self.data_dir / "cache_info.json"
         self.stats_file = self.data_dir / "scraping_stats.json"
+
+    # ---- stats helpers (per-service) ----
+    def _default_service_stats(self) -> Dict[str, Any]:
+        return {
+            "daily_results": {},
+            "success_rate_30d": 0,
+            "total_attempts_30d": 0,
+            "total_success_30d": 0,
+            "daily_success_array": [],
+            "last_update": None,
+            "last_events_count": 0,
+        }
+
+    def _load_all_stats(self) -> Dict[str, Any]:
+        """Load stats file and normalize to { services: { ufc|onefc|backend: ... } }"""
+        if self.stats_file.exists():
+            try:
+                with open(self.stats_file, 'r') as f:
+                    data = json.load(f)
+                # Normalize legacy flat shape
+                if "services" not in data:
+                    legacy = {
+                        "daily_results": data.get("daily_results", {}),
+                        "success_rate_30d": data.get("success_rate_30d", 0),
+                        "total_attempts_30d": data.get("total_attempts_30d", 0),
+                        "total_success_30d": data.get("total_success_30d", 0),
+                        "daily_success_array": data.get("daily_success_array", []),
+                        "last_update": data.get("last_update"),
+                        "last_events_count": data.get("last_events_count", 0),
+                    }
+                    data = {"services": {"backend": {**self._default_service_stats(), **legacy}}}
+                # Ensure all known services exist
+                services = data.get("services", {})
+                for key in ("ufc", "onefc", "backend"):
+                    if key not in services:
+                        services[key] = self._default_service_stats()
+                data["services"] = services
+                return data
+            except Exception:
+                pass
+        # Default fresh structure
+        return {
+            "services": {
+                "ufc": self._default_service_stats(),
+                "onefc": self._default_service_stats(),
+                "backend": self._default_service_stats(),
+            }
+        }
+
+    def _save_all_stats(self, data: Dict[str, Any]) -> None:
+        with open(self.stats_file, 'w') as f:
+            json.dump(data, f)
         
     def get_cache_info(self):
         """Get cache information for monitoring"""
@@ -44,77 +97,62 @@ class CacheManager:
         with open(self.cache_file, 'w') as f:
             json.dump(cache_info, f)
         
-        # Update scraping statistics
-        self.update_scraping_stats(status == "success")
+        # Update backend heartbeat in stats
+        try:
+            self.update_service_stats("backend", status == "success")
+        except Exception:
+            pass
     
     def update_scraping_stats(self, success: bool):
-        """Update 30-day scraping statistics"""
-        stats = self.get_scraping_stats()
-        
+        """Legacy method: update backend service stats."""
+        self.update_service_stats("backend", success)
+
+    def update_service_stats(self, service: str, success: bool, events_count: int | None = None) -> None:
+        """Update 30-day stats for a given service (ufc, onefc, backend)."""
+        data = self._load_all_stats()
+        stats = data["services"].get(service, self._default_service_stats())
+
         today = datetime.now().strftime("%Y-%m-%d")
-        
-        # Add today's result
         if today not in stats["daily_results"]:
             stats["daily_results"][today] = {"success": 0, "failed": 0}
-        
         if success:
             stats["daily_results"][today]["success"] += 1
         else:
             stats["daily_results"][today]["failed"] += 1
-        
-        # Remove entries older than 30 days
-        thirty_days_ago = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
-        stats["daily_results"] = {
-            date: data for date, data in stats["daily_results"].items() 
-            if date >= thirty_days_ago
-        }
-        
-        # Calculate 30-day success rate
-        total_attempts = sum(data["success"] + data["failed"] for data in stats["daily_results"].values())
-        total_success = sum(data["success"] for data in stats["daily_results"].values())
-        
-        stats["success_rate_30d"] = (total_success / total_attempts * 100) if total_attempts > 0 else 0
+
+        # Trim >30 days
+        cutoff = (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d")
+        stats["daily_results"] = {d: v for d, v in stats["daily_results"].items() if d >= cutoff}
+
+        # Recompute aggregates
+        total_attempts = sum(v["success"] + v["failed"] for v in stats["daily_results"].values())
+        total_success = sum(v["success"] for v in stats["daily_results"].values())
+        stats["success_rate_30d"] = (total_success / total_attempts * 100) if total_attempts else 0
         stats["total_attempts_30d"] = total_attempts
         stats["total_success_30d"] = total_success
-        
-        # Generate daily success array for frontend
-        stats["daily_success_array"] = []
+
+        # Rebuild daily_success_array
+        daily = []
         for i in range(30):
-            date = (datetime.now() - timedelta(days=29-i)).strftime("%Y-%m-%d")
+            date = (datetime.now() - timedelta(days=29 - i)).strftime("%Y-%m-%d")
             if date in stats["daily_results"]:
-                day_data = stats["daily_results"][date]
-                # Consider day successful if more successes than failures
-                success = day_data["success"] > day_data["failed"]
+                dr = stats["daily_results"][date]
+                success_day = dr["success"] > dr["failed"]
             else:
-                success = False  # No data for this day
-            stats["daily_success_array"].append({
-                "date": date,
-                "success": success
-            })
-        
-        with open(self.stats_file, 'w') as f:
-            json.dump(stats, f)
+                success_day = False
+            daily.append({"date": date, "success": success_day})
+        stats["daily_success_array"] = daily
+
+        stats["last_update"] = datetime.now().isoformat()
+        if events_count is not None:
+            stats["last_events_count"] = events_count
+
+        data["services"][service] = stats
+        self._save_all_stats(data)
     
-    def get_scraping_stats(self):
-        """Get 30-day scraping statistics"""
-        if self.stats_file.exists():
-            try:
-                with open(self.stats_file, 'r') as f:
-                    stats = json.load(f)
-                    # Ensure daily_success_array exists
-                    if "daily_success_array" not in stats:
-                        stats["daily_success_array"] = []
-                    return stats
-            except:
-                pass
-        
-        return {
-            "daily_results": {},
-            "success_rate_30d": 0,
-            "total_attempts_30d": 0,
-            "total_success_30d": 0,
-            "daily_success_array": []
-        }
+    def get_scraping_stats(self) -> Dict[str, Any]:
+        """Return stats for all services."""
+        return self._load_all_stats()
     
     def is_cache_fresh(self, max_age_hours=24):
         """Check if cache is fresh enough"""
@@ -133,6 +171,10 @@ class CacheManager:
             self.cache_file.unlink()
         if self.stats_file.exists():
             self.stats_file.unlink()
+
+
+# Shared global instance
+global_cache_manager = CacheManager()
 
 
 class CalendarControl(metaclass=ABCMeta):

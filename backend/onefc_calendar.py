@@ -2,7 +2,7 @@ from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from backend.calendar_control import CalendarControl, Event
+from backend.calendar_control import CalendarControl, Event, global_cache_manager
 
 
 class OneFcCalendar(CalendarControl):
@@ -101,13 +101,23 @@ class OneFcCalendar(CalendarControl):
         if not self.time_to_update():
             return file_path
         self.log.info("Starting calendar update")
-        for url in self.get_event_links():
-            event = self.get_event_from_url(url)
-            self.update_existing_event(event)
-        with open(file_path, "w", encoding="UTF-8") as calendar_file:
-            calendar_file.writelines(self.event_calendar)
-        self.log.info(
-            f"Writing out {len(self.event_calendar.events)} events on calendar to {file_path}"
-        )
-        self.last_update = datetime.now(tz=self.UTC)
+        success = True
+        try:
+            for url in self.get_event_links():
+                event = self.get_event_from_url(url)
+                self.update_existing_event(event)
+            with open(file_path, "w", encoding="UTF-8") as calendar_file:
+                calendar_file.writelines(self.event_calendar)
+            events_count = len(self.event_calendar.events)
+            self.log.info(
+                f"Writing out {events_count} events on calendar to {file_path}"
+            )
+            self.last_update = datetime.now(tz=self.UTC)
+            global_cache_manager.update_service_stats("onefc", True, events_count=events_count)
+        except Exception:
+            success = False
+            global_cache_manager.update_service_stats("onefc", False)
+            raise
+        finally:
+            global_cache_manager.update_service_stats("backend", success)
         return file_path

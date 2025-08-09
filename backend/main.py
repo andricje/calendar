@@ -3,13 +3,13 @@
 import os
 from backend.onefc_calendar import OneFcCalendar
 from backend.ufc_calendar import UfcCalendar
-from backend.calendar_control import CacheManager
+from backend.calendar_control import global_cache_manager
 from flask import Flask, redirect, send_file, request, jsonify
 from datetime import datetime
 
 one_fc_calendar = OneFcCalendar()
 ufc_calendar = UfcCalendar()
-cache_manager = CacheManager()
+cache_manager = global_cache_manager
 app: Flask = Flask(__name__)
 url = os.getenv("URL") if os.getenv("URL") else "mmacalendars.com"
 
@@ -80,6 +80,8 @@ def clear_cache():
 def scraping_stats():
     """Return 30-day scraping statistics"""
     stats = cache_manager.get_scraping_stats()
+    # Heartbeat for backend
+    cache_manager.update_service_stats("backend", True)
     return jsonify({
         "stats": stats,
         "timestamp": datetime.now().isoformat()
